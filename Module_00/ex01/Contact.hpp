@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:30:37 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/18 19:36:12 by pablo            ###   ########.fr       */
+/*   Updated: 2025/11/21 12:41:22 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,17 @@
 
 #include <string>
 
-class Contact {
-public:
-  Contact() : id(-1) { }
+class Contact
+{
+  public:
+	Contact() : id(-1) {}
 
-  int id;
-  std::string f_name;
-  std::string l_name;
-  std::string nickname;
-  std::string phone;
-  std::string secret;
+	int id;
+	std::string f_name;
+	std::string l_name;
+	std::string nickname;
+	std::string phone;
+	std::string secret;
 };
 
 #endif
