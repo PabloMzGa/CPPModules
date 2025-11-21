@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   PhoneBook.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:36:54 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/21 13:56:08 by pablo            ###   ########.fr       */
+/*   Updated: 2025/11/21 17:12:23 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PhoneBook.hpp"
 #include <limits>
+#include <string>
+#include "colors.h"
+#include <iostream>
 
 /**
  * @brief Finds an available position in the phone book for adding a new
@@ -74,4 +77,32 @@ void PhoneBook::add_contact(Contact *contact)
 	contact->id = id;
 	this->contacts[pos] = *contact;
 
+}
+
+void PhoneBook::add_command()
+{
+	Contact contact;
+	std::string input;
+
+	std::cout << BOLD "First name" RESET << std::endl;
+	std::getline(std::cin, input);
+	contact.f_name = input;
+
+	std::cout << BOLD "Last name" RESET << std::endl;
+	std::getline(std::cin, input);
+	contact.l_name = input;
+
+	std::cout << BOLD "Nickname" RESET << std::endl;
+	std::getline(std::cin, input);
+	contact.nickname = input;
+
+	std::cout << BOLD "Phone number" RESET << std::endl;
+	std::getline(std::cin, input);
+	contact.phone = input;
+
+	std::cout << BOLD "Darkest secret" RESET << std::endl;
+	std::getline(std::cin, input);
+	contact.secret = input;
+
+	this->add_contact(&contact);
 }

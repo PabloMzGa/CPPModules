@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 13:08:24 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/21 14:06:23 by pablo            ###   ########.fr       */
+/*   Updated: 2025/11/21 17:16:07 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,32 +17,10 @@
 #include <iostream>
 #include <string>
 
-Contact add_command()
+
+std::string truncate_string(std::string string)
 {
-	Contact contact;
-	std::string input;
 
-	std::cout << BOLD "First name" RESET << std::endl;
-	std::getline(std::cin, input);
-	contact.f_name = input;
-
-	std::cout << BOLD "Last name" RESET << std::endl;
-	std::getline(std::cin, input);
-	contact.l_name = input;
-
-	std::cout << BOLD "Nickname" RESET << std::endl;
-	std::getline(std::cin, input);
-	contact.nickname = input;
-
-	std::cout << BOLD "Phone number" RESET << std::endl;
-	std::getline(std::cin, input);
-	contact.phone = input;
-
-	std::cout << BOLD "Darkest secret" RESET << std::endl;
-	std::getline(std::cin, input);
-	contact.secret = input;
-
-	return contact;
 }
 
 void search_command(PhoneBook book)
@@ -72,8 +50,7 @@ int main()
 
 		if (input == "ADD")
 		{
-			new_contact = add_command();
-			phonebook.add_contact(&new_contact);
+			phonebook.add_command();
 			std::cout << GREEN BOLD "Contact added" RESET << std::endl;
 		}
 		else if (input == "SEARCH")

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhoneBook.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:28:29 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/21 13:58:20 by pablo            ###   ########.fr       */
+/*   Updated: 2025/11/21 17:12:16 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,12 @@ class PhoneBook
   private:
 	int find_available_pos();
 	int get_newest_id();
+	void add_contact(Contact *contact);
 
   public:
 	Contact contacts[8];
-	void add_contact(Contact *contact);
+	void add_command();
+
 };
 
 #endif
