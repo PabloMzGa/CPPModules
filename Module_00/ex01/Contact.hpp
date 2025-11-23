@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Contact.h                                          :+:      :+:    :+:   */
+/*   Contact.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:30:37 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/21 12:41:22 by pablo            ###   ########.fr       */
+/*   Updated: 2025/11/23 13:19:37 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 class Contact
 {
   public:
-	Contact() : id(-1) {}
+	Contact() : id(0) {}
 
-	int id;
+	unsigned int id;
 	std::string f_name;
 	std::string l_name;
 	std::string nickname;

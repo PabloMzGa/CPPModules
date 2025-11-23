@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 13:08:24 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/21 17:16:07 by pabmart2         ###   ########.fr       */
+/*   Updated: 2025/11/23 14:00:15 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,8 @@
 #include <string>
 
 
-std::string truncate_string(std::string string)
-{
+//TODO: Migrar printf a iomanip
 
-}
-
-void search_command(PhoneBook book)
-{
-	//TODO: Necesito truncar añadiendo un . en el caso de que sean más de 10 carácteres
-	//por lo que tengo que hacer a mano el truncado
-	printf("%10i|%.10s|%.10s|%.10s\n", book.contacts[0].id,
-	       book.contacts[0].f_name.c_str(), book.contacts[0].l_name.c_str(),
-	       book.contacts[0].nickname.c_str());
-}
 
 int main()
 {
@@ -54,9 +43,7 @@ int main()
 			std::cout << GREEN BOLD "Contact added" RESET << std::endl;
 		}
 		else if (input == "SEARCH")
-		{
-			search_command(phonebook);
-		}
+			phonebook.search_command();
 		else if (input == "EXIT")
 		{
 			std::cout << MAGENTA "Bye!" RESET << std::endl;
