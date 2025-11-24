@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   PhoneBook.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:36:54 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/23 13:59:54 by pablo            ###   ########.fr       */
+/*   Updated: 2025/11/24 19:13:03 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "PhoneBook.hpp"
 #include "colors.h"
+#include <iomanip>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -31,14 +32,16 @@
  */
 int PhoneBook::find_available_pos()
 {
-	int i = 0;
-	unsigned int oldest_id = std::numeric_limits<unsigned int>::max();
-	int oldest_index;
+	int				i;
+	unsigned int	oldest_id;
+	int				oldest_index;
 
+	i = 0;
+	oldest_id = std::numeric_limits<unsigned int>::max();
 	while (i < 8)
 	{
 		if (this->contacts[i].id == 0)
-			return i;
+			return (i);
 		else if (this->contacts[i].id < oldest_id)
 		{
 			oldest_id = this->contacts[i].id;
@@ -60,9 +63,11 @@ int PhoneBook::find_available_pos()
  */
 unsigned int PhoneBook::get_newest_id()
 {
-	int i = 0;
-	unsigned int newest_id = 0;
+	int				i;
+	unsigned int	newest_id;
 
+	i = 0;
+	newest_id = 0;
 	while (i < 8)
 	{
 		if (this->contacts[i].id > newest_id)
@@ -83,42 +88,27 @@ unsigned int PhoneBook::get_newest_id()
  */
 void PhoneBook::add_contact(Contact *contact)
 {
-	int pos = find_available_pos();
-	unsigned int id = get_newest_id();
+	int				pos;
+	unsigned int	id;
 
+	pos = find_available_pos();
+	id = get_newest_id();
 	contact->id = id + 1;
 	this->contacts[pos] = *contact;
 }
 
-/**
- * @brief Truncates a string to a maximum length of 10 characters, appending a
- * period if truncated.
- *
- * This function takes an input string and checks its length. If the string is
- * longer than 10 characters, it creates a copy, resizes it to 10 characters,
- * and replaces the last character with a period ('.'). If the string is 10
- * characters or shorter, it returns a copy of the original string unchanged.
- *
- * @param string The input string to be truncated.
- * @return A new std::string that is either the original string (if length <=
- * 10) or a truncated version ending with a period (if length > 10).
- */
 std::string PhoneBook::truncate_string(std::string string)
 {
-	size_t len = string.size();
-	std::string cpy = string;
-
-	if (len > 10)
-	{
-		cpy.resize(10);
-		cpy[9] = '.';
-	}
-	return (cpy);
+	if (string.size() > 10)
+		return (string.substr(0, 9) + ".");
+	return (string);
 }
 
-Contact* PhoneBook::get_contact(unsigned int id)
+Contact *PhoneBook::get_contact(unsigned int id)
 {
-	int i = 0;
+	int	i;
+
+	i = 0;
 	while (i < 8)
 	{
 		if (id == this->contacts[i].id)
@@ -146,60 +136,62 @@ Contact* PhoneBook::get_contact(unsigned int id)
  */
 void PhoneBook::add_command()
 {
-	Contact contact;
-	std::string input;
+	Contact	contact;
 
+	std::string input;
 	std::cout << BOLD "First name" RESET << std::endl;
 	std::getline(std::cin, input);
 	contact.f_name = input;
-
 	std::cout << BOLD "Last name" RESET << std::endl;
 	std::getline(std::cin, input);
 	contact.l_name = input;
-
 	std::cout << BOLD "Nickname" RESET << std::endl;
 	std::getline(std::cin, input);
 	contact.nickname = input;
-
 	std::cout << BOLD "Phone number" RESET << std::endl;
 	std::getline(std::cin, input);
 	contact.phone = input;
-
 	std::cout << BOLD "Darkest secret" RESET << std::endl;
 	std::getline(std::cin, input);
 	contact.secret = input;
-
 	this->add_contact(&contact);
 }
 
 void PhoneBook::search_command()
 {
-	int i = 0;
-	int id;
-	char loop = 1;
+	int		i;
+	int		id;
+	char	loop;
+	Contact	*found;
 
+	i = 0;
+	loop = 1;
 	std::string input;
+	std::cout << std::string(8, ' ') << BOLD "Id" RESET "|"
+	<< BOLD "First Name" RESET "|"
+	<< " " << BOLD "Last Name" RESET "|"
+	<< std::string(2, ' ') << BOLD "Nickname" RESET
+	<< std::endl;
 	while (i < 8 && this->contacts[i].id != 0)
 	{
-		printf("%10u|%10s|%10s|%10s\n", this->contacts[i].id,
-		       truncate_string(this->contacts[i].f_name).c_str(),
-		       truncate_string(this->contacts[i].l_name).c_str(),
-		       truncate_string(this->contacts[i].nickname).c_str());
+		std::cout << std::right << std::setw(10) << this->contacts[i].id << "|"
+		<< std::right << std::setw(10) << truncate_string(this->contacts[i].f_name) << "|"
+		<< std::right << std::setw(10) << truncate_string(this->contacts[i].l_name) << "|"
+		<< std::right << std::setw(10) << truncate_string(this->contacts[i].nickname)  << std::endl;
 		++i;
 	}
 	while (loop)
 	{
-
 		std::cout << BOLD "Please, enter the contact's index, or write BACK to "
-		                  "return to main menu" RESET
-		          << std::endl;
+							"return to main menu" RESET
+					<< std::endl;
 		std::getline(std::cin, input);
 		if (input == "BACK")
-			return;
+			return ;
 		try
 		{
 			id = static_cast<unsigned int>(std::stoul(input));
-			Contact* found = get_contact(id);
+			found = get_contact(id);
 			if (found)
 			{
 				std::cout << BOLD "First name: " RESET << found->f_name << std::endl;
