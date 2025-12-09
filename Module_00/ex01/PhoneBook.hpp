@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhoneBook.hpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:28:29 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/23 13:56:02 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/09 19:07:34 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,8 @@ class PhoneBook
 
   public:
 	Contact contacts[8];
-	void add_command();
-	void search_command();
-
+	bool add_command();
+	bool search_command();
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:36:54 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/24 19:13:03 by pabmart2         ###   ########.fr       */
+/*   Updated: 2025/12/09 19:14:15 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,15 @@ void PhoneBook::add_contact(Contact *contact)
 	this->contacts[pos] = *contact;
 }
 
+/**
+ * @brief Truncates a string to a maximum length of 10 characters.
+ *
+ * If the input string is longer than 10 characters, it returns the first 9 characters
+ * followed by a period ('.'). Otherwise, it returns the string unchanged.
+ *
+ * @param string The input string to be truncated.
+ * @return std::string The truncated string or the original if it was 10 characters or less.
+ */
 std::string PhoneBook::truncate_string(std::string string)
 {
 	if (string.size() > 10)
@@ -104,6 +113,16 @@ std::string PhoneBook::truncate_string(std::string string)
 	return (string);
 }
 
+/**
+ * @brief Retrieves a contact from the phone book by its ID.
+ *
+ * This function iterates through the array of contacts (up to 8) and returns a pointer
+ * to the contact whose ID matches the provided ID. If no matching contact is found,
+ * it returns NULL.
+ *
+ * @param id The unique identifier of the contact to retrieve.
+ * @return A pointer to the Contact object if found, or NULL if not found.
+ */
 Contact *PhoneBook::get_contact(unsigned int id)
 {
 	int	i;
@@ -120,74 +139,96 @@ Contact *PhoneBook::get_contact(unsigned int id)
 
 ////////////////////// PUBLIC ////////////////////////////////
 
+
 /**
- * @brief Adds a new contact to the phone book by prompting the user for input.
+ * @brief Prompts the user to input contact details and adds a new contact to the phonebook.
  *
- * This method creates a new Contact object and prompts the user to enter
- * the first name, last name, nickname, phone number, and darkest secret.
- * Each input is read from standard input using std::getline and assigned
- * to the corresponding fields of the Contact. After collecting all inputs,
- * the contact is added to the phone book via the add_contact method.
+ * This function interactively collects information for a new contact, including first name,
+ * last name, nickname, phone number, and darkest secret. It uses std::getline to read input
+ * from std::cin. If input reading fails (e.g., due to EOF), the function returns false.
+ * Otherwise, it creates a Contact object with the provided details and adds it to the
+ * phonebook via add_contact().
  *
- * @note This function uses std::cin for input, which may leave a newline
- *       character in the input buffer from previous operations.
- *
- * @return void
+ * @return true if the contact was successfully added, false if input reading failed.
  */
-void PhoneBook::add_command()
+bool PhoneBook::add_command()
 {
 	Contact	contact;
 
 	std::string input;
 	std::cout << BOLD "First name" RESET << std::endl;
-	std::getline(std::cin, input);
+	if (!std::getline(std::cin, input))
+		return false;
 	contact.f_name = input;
 	std::cout << BOLD "Last name" RESET << std::endl;
-	std::getline(std::cin, input);
+	if (!std::getline(std::cin, input))
+		return false;
 	contact.l_name = input;
 	std::cout << BOLD "Nickname" RESET << std::endl;
-	std::getline(std::cin, input);
+	if (!std::getline(std::cin, input))
+		return false;
 	contact.nickname = input;
 	std::cout << BOLD "Phone number" RESET << std::endl;
-	std::getline(std::cin, input);
+	if (!std::getline(std::cin, input))
+		return false;
 	contact.phone = input;
 	std::cout << BOLD "Darkest secret" RESET << std::endl;
-	std::getline(std::cin, input);
+	if (!std::getline(std::cin, input))
+		return false;
 	contact.secret = input;
 	this->add_contact(&contact);
+	return true;
 }
 
-void PhoneBook::search_command()
+/**
+ * @brief Searches for and displays contact information in the phonebook.
+ *
+ * This method first checks if there are any contacts in the phonebook. If not, it displays a message
+ * and returns true. Otherwise, it prints a formatted table of up to 8 contacts showing their ID,
+ * truncated first name, last name, and nickname. It then enters a loop prompting the user to enter
+ * a contact's ID or "BACK" to return to the main menu. If a valid ID is entered and the contact is
+ * found, it displays the full details of the contact (first name, last name, nickname, phone number,
+ * and darkest secret). If the contact is not found or the input is invalid, appropriate error messages
+ * are shown. The loop continues until a valid contact is displayed or "BACK" is entered.
+ *
+ * @return true if the search completes successfully or "BACK" is entered; false if input reading fails.
+ */
+bool PhoneBook::search_command()
 {
 	int		i;
 	int		id;
 	char	loop;
 	Contact	*found;
 
+	if (!get_newest_id())
+	{
+		std::cout << RED "No contacts in phonebook yet!" RESET << std::endl;
+		return true;
+	}
 	i = 0;
 	loop = 1;
 	std::string input;
-	std::cout << std::string(8, ' ') << BOLD "Id" RESET "|"
-	<< BOLD "First Name" RESET "|"
-	<< " " << BOLD "Last Name" RESET "|"
-	<< std::string(2, ' ') << BOLD "Nickname" RESET
-	<< std::endl;
+	std::cout << std::string(8,
+		' ') << BOLD "Id" RESET "|" << BOLD "First Name" RESET "|"
+				<< " " << BOLD "Last Name" RESET "|" << std::string(2,
+					' ') << BOLD "Nickname" RESET << std::endl;
 	while (i < 8 && this->contacts[i].id != 0)
 	{
 		std::cout << std::right << std::setw(10) << this->contacts[i].id << "|"
 		<< std::right << std::setw(10) << truncate_string(this->contacts[i].f_name) << "|"
 		<< std::right << std::setw(10) << truncate_string(this->contacts[i].l_name) << "|"
-		<< std::right << std::setw(10) << truncate_string(this->contacts[i].nickname)  << std::endl;
+		<< std::right << std::setw(10) << truncate_string(this->contacts[i].nickname) << std::endl;
 		++i;
 	}
 	while (loop)
 	{
-		std::cout << BOLD "Please, enter the contact's index, or write BACK to "
-							"return to main menu" RESET
+		std::cout << BOLD "Please, enter the contact's ID, or write BACK to "
+						"return to main menu" RESET
 					<< std::endl;
-		std::getline(std::cin, input);
+		if (!std::getline(std::cin, input))
+			return false;
 		if (input == "BACK")
-			return ;
+			return true;
 		try
 		{
 			id = static_cast<unsigned int>(std::stoul(input));
@@ -199,7 +240,7 @@ void PhoneBook::search_command()
 				std::cout << BOLD "Nickname: " RESET << found->nickname << std::endl;
 				std::cout << BOLD "Phone number: " RESET << found->phone << std::endl;
 				std::cout << BOLD "Darkest secret: " RESET << found->secret << std::endl;
-				loop = 0;
+				return true;
 			}
 			else
 			{
@@ -211,4 +252,5 @@ void PhoneBook::search_command()
 			std::cout << BOLD RED "Invalid id!" RESET << std::endl;
 		}
 	}
+	return true;
 }

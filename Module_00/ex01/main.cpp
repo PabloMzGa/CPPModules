@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/21 13:08:24 by pablo             #+#    #+#             */
-/*   Updated: 2025/11/23 14:00:15 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/09 19:05:17 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,33 +17,47 @@
 #include <iostream>
 #include <string>
 
-
-//TODO: Migrar printf a iomanip
-
-
-int main()
+int	main(void)
 {
-	Contact new_contact;
-	PhoneBook phonebook;
-	std::string input;
-	char loop = 1;
+	Contact		new_contact;
+	PhoneBook	phonebook;
+	char		loop;
 
+	std::string input;
+	loop = 1;
 	while (loop)
 	{
-
-		std::cout << BOLD
-		    "Welcome to this Awesome Phonebook. Please enter the command "
-		    "(ADD, SEARCH, EXIT)" RESET
-		          << std::endl;
-		std::getline(std::cin, input);
-
-		if (input == "ADD")
+		std::cout << BOLD "Welcome to this Awesome Phonebook. Please enter the command "
+							"(ADD, SEARCH, EXIT)" RESET
+					<< std::endl;
+		if (!std::getline(std::cin, input))
 		{
-			phonebook.add_command();
-			std::cout << GREEN BOLD "Contact added" RESET << std::endl;
+			std::cout << MAGENTA "Bye!" RESET << std::endl;
+			loop = 0;
+		}
+		else if (input == "ADD")
+		{
+			if (phonebook.add_command())
+				std::cout << GREEN BOLD "Contact added" RESET << std::endl;
+			else
+			{
+				if (std::cin.eof())
+				{
+					std::cin.clear();
+					clearerr(stdin);
+					std::cout << YELLOW "\nOperation cancelled" RESET << std::endl;
+				}
+			}
 		}
 		else if (input == "SEARCH")
-			phonebook.search_command();
+		{
+			if (!phonebook.search_command())
+			{
+				std::cin.clear();
+				clearerr(stdin);
+				std::cout << YELLOW "\nOperation cancelled" RESET << std::endl;
+			}
+		}
 		else if (input == "EXIT")
 		{
 			std::cout << MAGENTA "Bye!" RESET << std::endl;
