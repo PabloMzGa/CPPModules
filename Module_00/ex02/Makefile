@@ -6,7 +6,7 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/10 22:47:50 by pablo            ###   ########.fr        #
+#    Updated: 2025/12/10 22:26:56 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,9 +14,9 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
-NAME = $(BUILD_DIR)/Megaphone
+NAME = $(BUILD_DIR)/AccountTest
 
-SRC = megaphone.cpp
+SRC = tests.cpp Account.cpp
 
 OBJ_DIR = $(BUILD_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))

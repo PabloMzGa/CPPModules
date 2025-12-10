@@ -3,15 +3,15 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+         #
+#    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/11/24 19:01:52 by pabmart2         ###   ########.fr        #
+#    Updated: 2025/12/10 22:27:08 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
 NAME = $(BUILD_DIR)/AwesomePhoneBook
