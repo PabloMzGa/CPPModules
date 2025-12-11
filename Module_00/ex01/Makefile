@@ -14,7 +14,7 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
-NAME = $(BUILD_DIR)/AwesomePhoneBook
+NAME = $(BUILD_DIR)/awesome_phonebook
 
 SRC = main.cpp PhoneBook.cpp
 

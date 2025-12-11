@@ -14,7 +14,7 @@ CXX = g++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
-NAME = $(BUILD_DIR)/AccountTest
+NAME = $(BUILD_DIR)/account_test
 
 SRC = tests.cpp Account.cpp
 

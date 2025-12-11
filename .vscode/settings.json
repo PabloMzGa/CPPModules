@@ -45,6 +45,12 @@
 		"stdexcept": "cpp",
 		"streambuf": "cpp",
 		"typeinfo": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"ctime": "cpp",
+		"*.tcc": "cpp",
+		"optional": "cpp",
+		"ranges": "cpp",
+		"span": "cpp",
+		"sstream": "cpp"
 	}
 }
