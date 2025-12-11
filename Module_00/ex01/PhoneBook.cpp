@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PhoneBook.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/18 18:36:54 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/10 22:46:39 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/11 20:14:48 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <limits>
 #include <string>
 
-////////////////////// PRIVATE ////////////////////////////////
+/////////////////////////////// PRIVATE ////////////////////////////////////////
 
 /**
  * @brief Finds an available position in the phone book for adding a new
@@ -33,24 +33,24 @@
  */
 int PhoneBook::find_available_pos()
 {
-	int i;
-	unsigned int oldest_id;
-	int oldest_index;
+	int				i;
+	unsigned int	min_id;
+	int				min_index_pos;
 
 	i = 0;
-	oldest_id = std::numeric_limits<unsigned int>::max();
+	min_id = std::numeric_limits<unsigned int>::max();
 	while (i < 8)
 	{
-		if (this->contacts[i].id == 0)
+		if (this->_contacts[i].get_id() == 0)
 			return (i);
-		else if (this->contacts[i].id < oldest_id)
+		else if (this->_contacts[i].get_id() < min_id)
 		{
-			oldest_id = this->contacts[i].id;
-			oldest_index = i;
+			min_id = this->_contacts[i].get_id();
+			min_index_pos = i;
 		}
 		++i;
 	}
-	return (oldest_index);
+	return (min_index_pos);
 }
 
 /**
@@ -64,15 +64,15 @@ int PhoneBook::find_available_pos()
  */
 unsigned int PhoneBook::get_newest_id()
 {
-	int i;
-	unsigned int newest_id;
+	int				i;
+	unsigned int	newest_id;
 
 	i = 0;
 	newest_id = 0;
 	while (i < 8)
 	{
-		if (this->contacts[i].id > newest_id)
-			newest_id = this->contacts[i].id;
+		if (this->_contacts[i].get_id() > newest_id)
+			newest_id = this->_contacts[i].get_id();
 		++i;
 	}
 	return (newest_id);
@@ -89,13 +89,13 @@ unsigned int PhoneBook::get_newest_id()
  */
 void PhoneBook::add_contact(Contact *contact)
 {
-	int pos;
-	unsigned int id;
+	int				pos;
+	unsigned int	id;
 
 	pos = find_available_pos();
 	id = get_newest_id();
-	contact->id = id + 1;
-	this->contacts[pos] = *contact;
+	contact->set_id(id + 1);
+	this->_contacts[pos] = *contact;
 }
 
 /**
@@ -128,19 +128,19 @@ std::string PhoneBook::truncate_string(std::string string)
  */
 Contact *PhoneBook::get_contact(unsigned int id)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < 8)
 	{
-		if (id == this->contacts[i].id)
-			return (&this->contacts[i]);
+		if (id == this->_contacts[i].get_id())
+			return (&this->_contacts[i]);
 		++i;
 	}
 	return (NULL);
 }
 
-////////////////////// PUBLIC ////////////////////////////////
+/////////////////////////////// PUBLIC /////////////////////////////////////////
 
 /**
  * @brief Prompts the user to input contact details and adds a new contact to
@@ -157,31 +157,56 @@ Contact *PhoneBook::get_contact(unsigned int id)
  */
 bool PhoneBook::add_command()
 {
-	Contact contact;
+	Contact	contact;
 
 	std::string input;
 	std::cout << BOLD "First name" RESET << std::endl;
-	if (!std::getline(std::cin, input))
-		return false;
-	contact.f_name = input;
+	while (true)
+	{
+		if (!std::getline(std::cin, input))
+			return (false);
+		if (contact.set_fname(input))
+			break;
+		std::cout << RED "First name cannot be empty. Please try again:" RESET << std::endl;
+	}
 	std::cout << BOLD "Last name" RESET << std::endl;
-	if (!std::getline(std::cin, input))
-		return false;
-	contact.l_name = input;
+	while (true)
+	{
+		if (!std::getline(std::cin, input))
+			return (false);
+		if (contact.set_lname(input))
+			break;
+		std::cout << RED "Last name cannot be empty. Please try again:" RESET << std::endl;
+	}
 	std::cout << BOLD "Nickname" RESET << std::endl;
-	if (!std::getline(std::cin, input))
-		return false;
-	contact.nickname = input;
+	while (true)
+	{
+		if (!std::getline(std::cin, input))
+			return (false);
+		if (contact.set_nickname(input))
+			break;
+		std::cout << RED "Nickname cannot be empty. Please try again:" RESET << std::endl;
+	}
 	std::cout << BOLD "Phone number" RESET << std::endl;
-	if (!std::getline(std::cin, input))
-		return false;
-	contact.phone = input;
+	while (true)
+	{
+		if (!std::getline(std::cin, input))
+			return (false);
+		if (contact.set_phone(input))
+			break;
+		std::cout << RED "Phone number cannot be empty. Please try again:" RESET << std::endl;
+	}
 	std::cout << BOLD "Darkest secret" RESET << std::endl;
-	if (!std::getline(std::cin, input))
-		return false;
-	contact.secret = input;
+	while (true)
+	{
+		if (!std::getline(std::cin, input))
+			return (false);
+		if (contact.set_secret(input))
+			break;
+		std::cout << RED "Darkest secret cannot be empty. Please try again:" RESET << std::endl;
+	}
 	this->add_contact(&contact);
-	return true;
+	return (true);
 }
 
 /**
@@ -197,72 +222,63 @@ bool PhoneBook::add_command()
  * found or the input is invalid, appropriate error messages are shown. The loop
  * continues until a valid contact is displayed or "BACK" is entered.
  *
- * @return true if the search completes successfully or "BACK" is entered; false
+
+	* @return (true if the search completes successfully or "BACK" is entered); false
  * if input reading fails.
  */
 bool PhoneBook::search_command()
 {
-	int i;
-	int id;
-	char loop;
-	Contact *found;
+	int		i;
+	int		id;
+	char	loop;
+	Contact	*found;
 
 	if (!get_newest_id())
 	{
 		std::cout << RED "No contacts in phonebook yet!" RESET << std::endl;
-		return true;
+		return (true);
 	}
 	i = 0;
 	loop = 1;
 	std::string input;
-	std::cout << std::string(8, ' ') << BOLD "Id" RESET "|"
-	          << BOLD "First Name" RESET "|" << " "
-	          << BOLD "Last Name" RESET "|" << std::string(2, ' ')
-	          << BOLD "Nickname" RESET << std::endl;
-	while (i < 8 && this->contacts[i].id != 0)
+	std::cout << std::string(8,
+		' ') << BOLD "Id" RESET "|" << BOLD "First Name" RESET "|"
+				<< " " << BOLD "Last Name" RESET "|" << std::string(2,
+					' ') << BOLD "Nickname" RESET << std::endl;
+	while (i < 8 && this->_contacts[i].get_id() != 0)
 	{
-		std::cout << std::right << std::setw(10) << this->contacts[i].id << "|"
-		          << std::right << std::setw(10)
-		          << truncate_string(this->contacts[i].f_name) << "|"
-		          << std::right << std::setw(10)
-		          << truncate_string(this->contacts[i].l_name) << "|"
-		          << std::right << std::setw(10)
-		          << truncate_string(this->contacts[i].nickname) << std::endl;
+		std::cout << std::right << std::setw(10) << this->_contacts[i].get_id()
+		<< "|" << std::right << std::setw(10) << truncate_string(this->_contacts[i].get_fname())
+		<< "|" << std::right << std::setw(10) << truncate_string(this->_contacts[i].get_lname())
+		<< "|" << std::right << std::setw(10) << truncate_string(this->_contacts[i].get_nickname())
+		<< std::endl;
 		++i;
 	}
 	while (loop)
 	{
 		std::cout << BOLD "Please, enter the contact's ID, or write BACK to "
-		                  "return to main menu" RESET
-		          << std::endl;
+							"return to main menu" RESET
+					<< std::endl;
 		if (!std::getline(std::cin, input))
-			return false;
+			return (false);
 		if (input == "BACK")
-			return true;
-
+			return (true);
 		id = atoi(input.c_str());
-		// id = static_cast<unsigned int>(std::stoul(input));
 		if (id)
 		{
 			found = get_contact(id);
 			if (found)
 			{
-				std::cout << BOLD "First name: " RESET << found->f_name
-				          << std::endl;
-				std::cout << BOLD "Last name: " RESET << found->l_name
-				          << std::endl;
-				std::cout << BOLD "Nickname: " RESET << found->nickname
-				          << std::endl;
-				std::cout << BOLD "Phone number: " RESET << found->phone
-				          << std::endl;
-				std::cout << BOLD "Darkest secret: " RESET << found->secret
-				          << std::endl;
-				return true;
+				std::cout << BOLD "First name: " RESET << found->get_fname() << std::endl;
+				std::cout << BOLD "Last name: " RESET << found->get_lname() << std::endl;
+				std::cout << BOLD "Nickname: " RESET << found->get_nickname() << std::endl;
+				std::cout << BOLD "Phone number: " RESET << found->get_phone() << std::endl;
+				std::cout << BOLD "Darkest secret: " RESET << found->get_secret() << std::endl;
+				return (true);
 			}
 			else
 			{
-				std::cout << BOLD YELLOW "Contact not found!" RESET
-				          << std::endl;
+				std::cout << BOLD YELLOW "Contact not found!" RESET << std::endl;
 			}
 		}
 		else
@@ -270,6 +286,5 @@ bool PhoneBook::search_command()
 			std::cout << BOLD RED "Invalid id!" RESET << std::endl;
 		}
 	}
-
-	return true;
+	return (true);
 }

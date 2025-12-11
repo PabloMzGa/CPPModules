@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
+#    By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/10 22:27:08 by pablo            ###   ########.fr        #
+#    Updated: 2025/12/11 20:10:08 by pabmart2         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 BUILD_DIR = build
 NAME = $(BUILD_DIR)/awesome_phonebook
 
-SRC = main.cpp PhoneBook.cpp
+SRC = main.cpp PhoneBook.cpp Contact.cpp
 
 OBJ_DIR = $(BUILD_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
