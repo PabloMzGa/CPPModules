@@ -3,15 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   Zombie.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 20:19:07 by pabmart2          #+#    #+#             */
-/*   Updated: 2025/12/11 20:54:46 by pabmart2         ###   ########.fr       */
+/*   Updated: 2025/12/12 22:51:50 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Zombie.hpp"
 #include <iostream>
+
+Zombie::Zombie()
+{
+	_name = "";
+}
 
 Zombie::Zombie(std::string name)
 {

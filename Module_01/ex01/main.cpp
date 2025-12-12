@@ -3,28 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/11 20:22:03 by pabmart2          #+#    #+#             */
-/*   Updated: 2025/12/11 20:53:28 by pabmart2         ###   ########.fr       */
+/*   Updated: 2025/12/12 22:58:19 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include "Zombie.hpp"
 
-void	randomChump(std::string name);
-
+Zombie* zombieHorde( int N, std::string name );
 
 int	main(void)
 {
-	std::string random_names[] = {"Braingore McDead", "Rotgut Ramirez",
-		"Fleshmuncher Jones", "Bonecruncher Silva", "Decay Drake",
-		"Maggot Mike", "Skullface Garcia", "Wormwood Wilson", "Corpse Carl",
-		"Ghoulie Gonzalez", "Putrid Pete", "Zombie Zack", "Rancid Rita",
-		"Decay Dean", "Moldy Max", "Graveyard Greg", "Stench Steve",
-		"Undead Ursula", "Rotten Roger", "Braindead Betty"};
-	srand(time(NULL));
-	randomChump(random_names[rand() % 20]);
+	int n = 5;
+	Zombie* horde = zombieHorde(n, "Zombie");
+	for (int i = 0; i < n; i++)
+	{
+		horde[i].announce();
+	}
+	delete[] horde;
+	return 0;
 }
