@@ -6,11 +6,11 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/12 22:58:33 by pablo            ###   ########.fr        #
+#    Updated: 2025/12/13 14:14:56 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build

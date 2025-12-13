@@ -6,7 +6,7 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/13 14:14:56 by pablo            ###   ########.fr        #
+#    Updated: 2025/12/13 14:28:27 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,12 +14,12 @@ CXX = clang++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
-NAME = $(BUILD_DIR)/brainz
+NAME = $(BUILD_DIR)/violence
 
 SRC =	main.cpp \
-		Zombie.cpp \
-		newZombie.cpp \
-		randomChump.cpp
+		HumanA.cpp \
+		HumanB.cpp \
+		Weapon.cpp
 
 OBJ_DIR = $(BUILD_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
