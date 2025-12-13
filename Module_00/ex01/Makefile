@@ -3,14 +3,14 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+         #
+#    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/11 20:10:08 by pabmart2         ###   ########.fr        #
+#    Updated: 2025/12/13 14:14:56 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CXX = g++
+CXX = clang++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
