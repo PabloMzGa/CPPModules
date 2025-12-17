@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Harl.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 18:23:42 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/16 18:51:19 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/17 21:17:53 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <Harl.hpp>
+#include "Harl.hpp"
 #include <iostream>
+#include <iterator>
 
 void Harl::debug()
 {
@@ -47,5 +48,26 @@ void Harl::error()
 
 void Harl::complain(std::string level)
 {
-	typedef void (Harl::*ComplaintFunc)();
+	typedef void (Harl::*t_complaint_func)();
+
+	struct s_complain_lvl{
+		std::string level_s;
+		t_complaint_func complain_func;
+	};
+
+	s_complain_lvl complains[] = {
+		{"DEBUG", &Harl::debug},
+		{"INFO", &Harl::info},
+		{"WARNING", &Harl::warning},
+		{"ERROR", &Harl::error}
+	};
+
+	int size = sizeof(complains) / sizeof(s_complain_lvl);
+
+	for (int i = 0; i < size; ++i) {
+		if (complains[i].level_s == level) {
+			(this->*complains[i].complain_func)();
+			break;
+		}
+	}
 }
