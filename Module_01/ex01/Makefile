@@ -6,7 +6,7 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/13 14:14:56 by pablo            ###   ########.fr        #
+#    Updated: 2025/12/19 13:15:32 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,6 +15,8 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
 NAME = $(BUILD_DIR)/horde
+
+HEADERS = Zombie.hpp
 
 SRC =	main.cpp \
 		Zombie.cpp \
@@ -25,7 +27,7 @@ OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(HEADERS)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@printf "\033[32m\n¡$(NAME) compiled! \
 	ᕦ(\033[36m⌐■\033[32m_\033[36m■\033[32m)ᕤ\033[0m\n"

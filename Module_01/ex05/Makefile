@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+         #
+#    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/17 21:17:22 by pabmart2         ###   ########.fr        #
+#    Updated: 2025/12/19 13:15:30 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,8 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 BUILD_DIR = build
 NAME = $(BUILD_DIR)/harl
 
+HEADERS = Harl.hpp
+
 SRC =	main.cpp \
 		Harl.cpp
 
@@ -24,7 +26,7 @@ OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) $(HEADERS)
 	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
 	@printf "\033[32m\n¡$(NAME) compiled! \
 	ᕦ(\033[36m⌐■\033[32m_\033[36m■\033[32m)ᕤ\033[0m\n"

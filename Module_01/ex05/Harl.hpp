@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Harl.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 18:21:59 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/17 21:19:29 by pabmart2         ###   ########.fr       */
+/*   Updated: 2025/12/19 12:36:09 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,4 @@ class Harl
 	void complain(std::string level);
 };
 
-#endif // HARL_HPP
+#endif

@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/15 17:51:28 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/15 20:42:34 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/18 20:03:52 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,11 @@ int main(int argc, char *argv[])
 	if (file_contents.empty())
 	{
 		std::cout << "Error reading file contents. Aborting" << std::endl;
+		return (1);
+	}
+	if (file_contents.find('\0') != std::string::npos)
+	{
+		std::cout << "File appears to be binary. Aborting" << std::endl;
 		return (1);
 	}
 	std::string s1(argv[2]);

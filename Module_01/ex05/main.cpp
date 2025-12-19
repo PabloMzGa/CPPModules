@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/17 20:33:04 by pabmart2          #+#    #+#             */
-/*   Updated: 2025/12/17 21:18:06 by pabmart2         ###   ########.fr       */
+/*   Updated: 2025/12/18 20:23:32 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,6 @@ int main() {
     std::cout << "\n--- Invalid levels ---" << std::endl;
     std::cout << "Testing 'debug' (lowercase):" << std::endl;
     harl.complain("debug");  // Should do nothing
-
-    std::cout << "\nTesting 'INVALID':" << std::endl;
-    harl.complain("INVALID");
 
     std::cout << "\nTesting empty string:" << std::endl;
     harl.complain("");
