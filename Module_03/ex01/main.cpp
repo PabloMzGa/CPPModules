@@ -6,11 +6,12 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:50:38 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:32:13 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 20:31:47 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ClapTrap.hpp"
+#include "ScavTrap.hpp"
 #include <iostream>
 
 int main()
@@ -52,6 +53,28 @@ int main()
 
 	// Try to repair without HP
 	clap.beRepaired(5);
+
+	std::cout << "\n=== Testing ScavTrap Class ===" << std::endl;
+
+	// Test default constructor
+	ScavTrap scav1;
+	scav1.attack("Bandit");
+
+	// Test constructor with name
+	ScavTrap scav2("Scavy");
+	scav2.takeDamage(20);
+	scav2.beRepaired(10);
+
+	// Test copy constructor
+	ScavTrap scav3(scav2);
+	scav3.attack("Enemy");
+
+	// Test assignment operator
+	scav1 = scav2;
+	scav1.attack("Another Enemy");
+
+	// Test ScavTrap specific method
+	scav1.guardGate();
 
 	std::cout << "\n=== Test Complete ===" << std::endl;
 

@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:29:56 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:02:06 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 20:27:02 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,20 +17,20 @@
 
 ClapTrap::ClapTrap() : name(""), hp(10), ep(10), atk_dmg(0)
 {
-	std::cout << "Hi my minion! I am " << name
+	std::cout << "[ClapTrap] Hi my minion! I am " << name
 	          << ". Lets go to kill some bandits!" << std::endl;
 }
 
 ClapTrap::ClapTrap(std::string name) : name(name), hp(10), ep(10), atk_dmg(0)
 {
-	std::cout << "Hi my minion! I am " << name
+	std::cout << "[ClapTrap] Hi my minion! I am " << name
 	          << ". Lets go to kill some bandits!" << std::endl;
 }
 
 ClapTrap::ClapTrap(const ClapTrap &copy)
     : name(copy.name), hp(copy.hp), ep(copy.ep), atk_dmg(copy.atk_dmg)
 {
-	std::cout << "Hi my minion! I am " << name
+	std::cout << "[ClapTrap] Hi my minion! I am " << name
 	          << ". Lets go to kill some bandits!" << std::endl;
 }
 
@@ -48,9 +48,10 @@ ClapTrap &ClapTrap::operator=(const ClapTrap &src)
 
 ClapTrap::~ClapTrap()
 {
-	std::cout << "Damn you Handsome Jack! How did you know my worst enemy"
-	             "are stairs?! Noooooooooooo"
-	          << std::endl;
+	std::cout
+	    << "[ClapTrap] Damn you Handsome Jack! How did you know my worst enemy"
+	       "are stairs?! You destroyed me! Noooooooooooo"
+	    << std::endl;
 }
 
 /////////////////////////////////// FUNCTIONS //////////////////////////////////
