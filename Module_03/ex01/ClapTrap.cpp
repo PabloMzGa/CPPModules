@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:29:56 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:45:47 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 21:39:51 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,18 @@
 
 ClapTrap::ClapTrap() : name(""), hp(10), ep(10), atk_dmg(0)
 {
-	std::cout << "[ClapTrap] Hi my minion! I am " << name
-	          << ". Lets go to kill some bandits!" << std::endl;
+	std::cout << "[ClapTrap] Default constructor called" << std::endl;
 }
 
 ClapTrap::ClapTrap(std::string name) : name(name), hp(10), ep(10), atk_dmg(0)
 {
-	std::cout << "[ClapTrap] Hi my minion! I am " << name
-	          << ". Lets go to kill some bandits!" << std::endl;
+	std::cout << "[ClapTrap] Parameterized constructor called for ClapTrap '" << name << "'" << std::endl;
 }
 
 ClapTrap::ClapTrap(const ClapTrap &copy)
     : name(copy.name), hp(copy.hp), ep(copy.ep), atk_dmg(copy.atk_dmg)
 {
-	std::cout << "[ClapTrap] Hi my minion! I am " << name
-	          << ". Lets go to kill some bandits!" << std::endl;
+	std::cout << "[ClapTrap] Copy constructor called for ClapTrap '" << name << "'" << std::endl;
 }
 
 ClapTrap &ClapTrap::operator=(const ClapTrap &src)
@@ -48,10 +45,7 @@ ClapTrap &ClapTrap::operator=(const ClapTrap &src)
 
 ClapTrap::~ClapTrap()
 {
-	std::cout
-	    << "[ClapTrap] Damn you Handsome Jack! How did you know my worst enemy"
-	       "are stairs?! You destroyed me! Noooooooooooo"
-	    << std::endl;
+	std::cout << "[ClapTrap] Destructor called for ClapTrap '" << name << "'" << std::endl;
 }
 
 /////////////////////////////////// FUNCTIONS //////////////////////////////////
@@ -61,27 +55,24 @@ void ClapTrap::attack(const std::string &target)
 	if (hp > 0 && ep > 0)
 	{
 		--ep;
-		std::cout << "[ClapTrap] " << name << " attacks " << target << " causing " << atk_dmg
-		          << " points of damage!" << std::endl;
+		std::cout << "[ClapTrap] attack() called by '" << name << "' on '" << target << "'" << std::endl;
 	}
 	else
-		std::cout << "[ClapTrap] Sad robot noises" << std::endl;
+		std::cout << "[ClapTrap] attack() failed: insufficient HP or EP" << std::endl;
 }
 
 void ClapTrap::takeDamage(unsigned int amount)
 {
-	std::cout << "[ClapTrap] Ouch! You shouldn't damage Hyperion's property! Now I have "
-	             "lost "
-	          << amount << " hit points" << std::endl;
+	std::cout << "[ClapTrap] takeDamage() called on '" << name << "', lost " << amount << " HP" << std::endl;
 	if (hp > amount)
 		hp -= amount;
 	else if (hp != 0)
 	{
-		std::cout << "[ClapTrap] Aaaaand... I die! " << std::endl;
+		std::cout << "[ClapTrap] '" << name << "' died" << std::endl;
 		hp = 0;
 	}
 	else
-		std::cout << "[ClapTrap] Sad robot noises" << std::endl;
+		std::cout << "[ClapTrap] takeDamage() failed: already dead" << std::endl;
 }
 
 void ClapTrap::beRepaired(unsigned int amount)
@@ -90,11 +81,8 @@ void ClapTrap::beRepaired(unsigned int amount)
 	{
 		--ep;
 		hp += amount;
-		std::cout << "[ClapTrap] I have recovered " << amount
-		          << " hit points. "
-		             "This feels almost as good as opening doors..."
-		          << std::endl;
+		std::cout << "[ClapTrap] beRepaired() called on '" << name << "', gained " << amount << " HP" << std::endl;
 	}
 	else
-		std::cout << "[ClapTrap] Sad robot noises" << std::endl;
+		std::cout << "[ClapTrap] beRepaired() failed: insufficient HP or EP" << std::endl;
 }

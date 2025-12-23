@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 20:08:27 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:28:02 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 21:39:51 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,7 @@
 
 ScavTrap::ScavTrap() : ClapTrap()
 {
-	std::cout << "[ScavTrap] And I am even stronger! " << name
-	          << ". Lets go to kill some skags!" << std::endl;
+	std::cout << "[ScavTrap] Default constructor called" << std::endl;
 	hp = 100;
 	ep = 50;
 	atk_dmg = 20;
@@ -26,8 +25,7 @@ ScavTrap::ScavTrap() : ClapTrap()
 
 ScavTrap::ScavTrap(std::string name) : ClapTrap(name)
 {
-	std::cout << "[ScavTrap] And I am even stronger! " << name
-	          << ". Lets go to kill some skags!" << std::endl;
+	std::cout << "[ScavTrap] Parameterized constructor called for ScavTrap '" << name << "'" << std::endl;
 	hp = 100;
 	ep = 50;
 	atk_dmg = 20;
@@ -35,8 +33,7 @@ ScavTrap::ScavTrap(std::string name) : ClapTrap(name)
 
 ScavTrap::ScavTrap(const ScavTrap &src) : ClapTrap(src)
 {
-	std::cout << "[ScavTrap] And I am even stronger! " << name
-	          << ". Lets go to kill some skags!" << std::endl;
+	std::cout << "[ScavTrap] Copy constructor called for ScavTrap '" << name << "'" << std::endl;
 }
 
 ScavTrap &ScavTrap::operator=(const ScavTrap &src)
@@ -50,13 +47,12 @@ ScavTrap &ScavTrap::operator=(const ScavTrap &src)
 
 ScavTrap::~ScavTrap()
 {
-	std::cout << "[ScavTrap] So much power for nothing..." << std::endl;
+	std::cout << "[ScavTrap] Destructor called for ScavTrap '" << name << "'" << std::endl;
 }
 
 /////////////////////////////////// FUNCTIONS //////////////////////////////////
 
 void ScavTrap::guardGate()
 {
-	std::cout << "Entering in Gatekeeper mode... You are not a real fan!"
-	          << std::endl;
+	std::cout << "[ScavTrap] guardGate() called by '" << name << "'" << std::endl;
 }
