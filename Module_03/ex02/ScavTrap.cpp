@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 20:08:27 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:45:46 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 20:28:02 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,11 +57,6 @@ ScavTrap::~ScavTrap()
 
 void ScavTrap::guardGate()
 {
-	if (hp > 0 && ep > 0)
-	{
-		std::cout << "[ScavTrap] Entering in Gatekeeper mode... You are not a real fan!"
-		          << std::endl;
-	}
-	else
-		std::cout << "[ScavTrap] Sad robot noises" << std::endl;
+	std::cout << "Entering in Gatekeeper mode... You are not a real fan!"
+	          << std::endl;
 }

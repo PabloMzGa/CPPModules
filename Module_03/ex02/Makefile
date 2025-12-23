@@ -6,7 +6,7 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2025/12/23 20:48:20 by pablo            ###   ########.fr        #
+#    Updated: 2025/12/23 20:50:01 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,13 +14,14 @@ CXX = clang++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 
 BUILD_DIR = build
-NAME = $(BUILD_DIR)/scavtrap
+NAME = $(BUILD_DIR)/fragtrap
 
-HEADERS = ClapTrap.hpp ScavTrap.hpp
+HEADERS = ClapTrap.hpp ScavTrap.hpp FragTrap.hpp
 
 SRC =	main.cpp \
 		ClapTrap.cpp \
-		ScavTrap.cpp
+		ScavTrap.cpp \
+		FragTrap.cpp
 
 OBJ_DIR = $(BUILD_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))

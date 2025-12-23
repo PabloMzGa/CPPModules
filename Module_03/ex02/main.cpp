@@ -6,36 +6,36 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:50:38 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:49:19 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 20:49:21 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ScavTrap.hpp"
+#include "FragTrap.hpp"
 #include <iostream>
 
 int main()
 {
-	std::cout << "=== Testing ScavTrap Class ===" << std::endl;
+	std::cout << "=== Testing FragTrap Class ===" << std::endl;
 
 	// Test default constructor
-	ScavTrap scav1;
-	scav1.attack("Bandit");
+	FragTrap frag1;
+	frag1.attack("Bandit");
 
 	// Test constructor with name
-	ScavTrap scav2("Scavy");
-	scav2.takeDamage(20);
-	scav2.beRepaired(10);
+	FragTrap frag2("Fraggy");
+	frag2.takeDamage(30);
+	frag2.beRepaired(20);
 
 	// Test copy constructor
-	ScavTrap scav3(scav2);
-	scav3.attack("Enemy");
+	FragTrap frag3(frag2);
+	frag3.attack("Enemy");
 
 	// Test assignment operator
-	scav1 = scav2;
-	scav1.attack("Another Enemy");
+	frag1 = frag2;
+	frag1.attack("Another Enemy");
 
-	// Test ScavTrap specific method
-	scav1.guardGate();
+	// Test FragTrap specific method
+	frag1.highFivesGuys();
 
 	std::cout << "\n=== Test Complete ===" << std::endl;
 

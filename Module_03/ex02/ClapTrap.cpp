@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:29:56 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:45:47 by pablo            ###   ########.fr       */
+/*   Updated: 2025/12/23 20:27:02 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,27 +61,27 @@ void ClapTrap::attack(const std::string &target)
 	if (hp > 0 && ep > 0)
 	{
 		--ep;
-		std::cout << "[ClapTrap] " << name << " attacks " << target << " causing " << atk_dmg
+		std::cout << name << " attacks " << target << " causing " << atk_dmg
 		          << " points of damage!" << std::endl;
 	}
 	else
-		std::cout << "[ClapTrap] Sad robot noises" << std::endl;
+		std::cout << "Sad robot noises" << std::endl;
 }
 
 void ClapTrap::takeDamage(unsigned int amount)
 {
-	std::cout << "[ClapTrap] Ouch! You shouldn't damage Hyperion's property! Now I have "
+	std::cout << "Ouch! You shouldn't damage Hyperion's property! Now I have "
 	             "lost "
 	          << amount << " hit points" << std::endl;
 	if (hp > amount)
 		hp -= amount;
 	else if (hp != 0)
 	{
-		std::cout << "[ClapTrap] Aaaaand... I die! " << std::endl;
+		std::cout << "Aaaaand... I die! " << std::endl;
 		hp = 0;
 	}
 	else
-		std::cout << "[ClapTrap] Sad robot noises" << std::endl;
+		std::cout << "Sad robot noises" << std::endl;
 }
 
 void ClapTrap::beRepaired(unsigned int amount)
@@ -90,11 +90,11 @@ void ClapTrap::beRepaired(unsigned int amount)
 	{
 		--ep;
 		hp += amount;
-		std::cout << "[ClapTrap] I have recovered " << amount
+		std::cout << "I have recovered " << amount
 		          << " hit points. "
 		             "This feels almost as good as opening doors..."
 		          << std::endl;
 	}
 	else
-		std::cout << "[ClapTrap] Sad robot noises" << std::endl;
+		std::cout << "Sad robot noises" << std::endl;
 }
