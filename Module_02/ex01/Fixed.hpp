@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Fixed.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 17:52:34 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/22 23:47:08 by pablo            ###   ########.fr       */
+/*   Updated: 2026/01/12 17:27:09 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,8 @@ class Fixed
 	float toFloat(void) const;
 	int toInt(void) const;
 
-	friend std::ostream &operator<<(std::ostream &os, const Fixed &f);
 };
+
+std::ostream &operator<<(std::ostream &os, const Fixed &f);
 
 #endif
