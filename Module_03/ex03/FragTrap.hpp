@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   FragTrap.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:59:43 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:57:23 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/13 14:33:57 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 class FragTrap : virtual public ClapTrap
 {
   public:
+	static const unsigned int BASE_HP  = 100;
+	static const unsigned int BASE_EP  = 100;
+	static const unsigned int BASE_ATK = 30;
+
 	FragTrap();
 	FragTrap(std::string name);
 	FragTrap(const FragTrap &copy);

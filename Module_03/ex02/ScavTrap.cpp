@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ScavTrap.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 20:08:27 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 21:39:51 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/13 13:23:06 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,15 @@ ScavTrap::~ScavTrap()
 void ScavTrap::guardGate()
 {
 	std::cout << "[ScavTrap] guardGate() called by '" << name << "'" << std::endl;
+}
+
+void ScavTrap::attack(const std::string &target)
+{
+	if (hp > 0 && ep > 0)
+	{
+		--ep;
+		std::cout << "[ScavTrap] attack() called by '" << name << "' on '" << target << "'" << std::endl;
+	}
+	else
+		std::cout << "[ScavTrap] attack() failed: insufficient HP or EP" << std::endl;
 }

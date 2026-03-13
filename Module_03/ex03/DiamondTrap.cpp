@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   DiamondTrap.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 20:59:25 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 21:51:19 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/13 14:33:56 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,37 +15,28 @@
 
 /////////////////////////////// ORTHODOX METHODS ///////////////////////////////
 
-DiamondTrap::DiamondTrap() : FragTrap(), ScavTrap()
+DiamondTrap::DiamondTrap() : ClapTrap("_clap_name"), FragTrap(), ScavTrap()
 {
+	this->name = "";
+	hp = FragTrap::BASE_HP;
+	ep = ScavTrap::BASE_EP;
+	atk_dmg = FragTrap::BASE_ATK;
 	std::cout << "[DiamondTrap] Default constructor called" << std::endl;
-	DiamondTrap::name = "";
-	ClapTrap::name = DiamondTrap::name + "_clap_name";
-	this->hp = FragTrap::hp;
-	this->ep = ScavTrap::ep;
-	this->atk_dmg = FragTrap::atk_dmg;
 }
 
-DiamondTrap::DiamondTrap(std::string name) : ClapTrap(name), FragTrap(name), ScavTrap(name)
+DiamondTrap::DiamondTrap(std::string name)
+    : ClapTrap(name + "_clap_name"), FragTrap(name), ScavTrap(name), name(name)
 {
-	std::cout
-	    << "[DiamondTrap] Parameterized constructor called for DiamondTrap '"
-	    << name << "'" << std::endl;
-	DiamondTrap::name = ClapTrap::name;
-	ClapTrap::name = DiamondTrap::name + "_clap_name";
-	this->hp = FragTrap::hp;
-	this->ep = ScavTrap::ep;
-	this->atk_dmg = FragTrap::atk_dmg;
+	hp = FragTrap::BASE_HP;
+	ep = ScavTrap::BASE_EP;
+	atk_dmg = FragTrap::BASE_ATK;
+	std::cout << "[DiamondTrap] Parameterized constructor called for DiamondTrap '" << this->name << "'" << std::endl;
 }
 
-DiamondTrap::DiamondTrap(const DiamondTrap &src) : ClapTrap(src), FragTrap(src), ScavTrap(src)
+DiamondTrap::DiamondTrap(const DiamondTrap &src)
+    : ClapTrap(src), FragTrap(src), ScavTrap(src), name(src.name)
 {
-	std::cout << "[DiamondTrap] Copy constructor called for DiamondTrap '"
-	          << name << "'" << std::endl;
-	DiamondTrap::name = ClapTrap::name;
-	ClapTrap::name = DiamondTrap::name + "_clap_name";
-	this->hp = FragTrap::hp;
-	this->ep = ScavTrap::ep;
-	this->atk_dmg = FragTrap::atk_dmg;
+	std::cout << "[DiamondTrap] Copy constructor called for DiamondTrap '" << this->name << "'" << std::endl;
 }
 
 DiamondTrap &DiamondTrap::operator=(const DiamondTrap &src)
@@ -65,6 +56,17 @@ DiamondTrap::~DiamondTrap()
 }
 
 /////////////////////////////////// FUNCTIONS //////////////////////////////////
+
+void DiamondTrap::attack(const std::string &target)
+{
+	if (hp > 0 && ep > 0)
+	{
+		--ep;
+		std::cout << "[ScavTrap] attack() called by '" << name << "' on '" << target << "'" << std::endl;
+	}
+	else
+		std::cout << "[ScavTrap] attack() failed: insufficient HP or EP" << std::endl;
+}
 
 void DiamondTrap::whoAmI()
 {

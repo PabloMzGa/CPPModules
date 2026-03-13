@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   ScavTrap.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 19:59:43 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 20:25:29 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/13 13:23:15 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCAVTRAP_HPP
-#define SCAVTRAP_HPP
+# define SCAVTRAP_HPP
 
-#include "ClapTrap.hpp"
+# include "ClapTrap.hpp"
 
 class ScavTrap : public ClapTrap
 {
@@ -24,6 +24,7 @@ class ScavTrap : public ClapTrap
 	ScavTrap &operator=(const ScavTrap &src);
 	~ScavTrap();
 	void guardGate();
+	void attack(const std::string &target);
 };
 
 #endif
