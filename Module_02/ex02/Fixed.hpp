@@ -6,14 +6,14 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 17:52:34 by pablo             #+#    #+#             */
-/*   Updated: 2026/01/12 17:27:27 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/03/13 12:32:29 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FIXED_HPP
-#define FIXED_HPP
+# define FIXED_HPP
 
-#include <iostream>
+# include <iostream>
 
 class Fixed
 {
@@ -44,6 +44,8 @@ class Fixed
 	Fixed &operator++();
 	Fixed operator++(int);
 
+	Fixed &operator--();
+	Fixed operator--(int);
 
 	int getRawBits(void) const;
 	void setRawBits(int const raw);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Fixed.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/19 18:08:08 by pablo             #+#    #+#             */
-/*   Updated: 2025/12/23 00:01:25 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/13 12:31:35 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ Fixed::Fixed() : value(0)
 Fixed::Fixed(int v)
 {
 	std::cout << "Int constructor called" << std::endl;
-	value = v;
+	value = v * (1 << n_fract_bits);
 }
 
 Fixed::Fixed(float v)
