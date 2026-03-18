@@ -6,12 +6,14 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 17:21:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/18 18:25:56 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/18 19:01:32 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Bureaucrat.hpp"
+#include <iostream>
 #include <ostream>
+#include "Form.hpp"
 
 ////////////////////////////////// CANONICAL ///////////////////////////////////
 
@@ -93,4 +95,21 @@ void Bureaucrat::demote(unsigned int steps)
 	if (steps + _grade > MIN_GRADE)
 		throw GradeTooHighException();
 	_grade += steps;
+}
+
+void Bureaucrat::signForm(Form &f)
+{
+	if (f.getSigned())
+		std::cout << _name << " couldn't sign form " << f.getName()
+		          << ". Is already signed!" << std::endl;
+	else if (f.getSignGrade() < _grade)
+
+		std::cout << _name << " couldn't sign form " << f.getName()
+		          << ". Bureaucrat grade is too low" << std::endl;
+	else
+	{
+		f.beSigned(*this);
+		std::cout << _name << " signed form " << f.getName() << std::endl;
+		return;
+	}
 }

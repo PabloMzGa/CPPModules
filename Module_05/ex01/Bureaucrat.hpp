@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 16:54:17 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/18 18:22:02 by pablo            ###   ########.fr       */
+/*   Updated: 2026/03/18 18:55:41 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <exception>
 #include <string>
+
+class Form;
 
 #define MAX_GRADE 1
 #define MIN_GRADE 150
@@ -33,6 +35,7 @@ class Bureaucrat
 
 	void promote(unsigned int steps);
 	void demote(unsigned int steps);
+	void signForm(Form &f);
 
 	class GradeTooHighException : public std::exception
 	{
