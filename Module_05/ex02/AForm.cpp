@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AForm.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 18:10:24 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/20 14:10:37 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/03/24 19:21:38 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 
 ////////////////////////////////// CANONICAL ///////////////////////////////////
 
-AForm::AForm() : _name("default"), _signed(false), _sign_grade(MIN_GRADE),
-	_exec_grade(MIN_GRADE), _target("default")
+AForm::AForm() : _name("default"), _target("default"), _signed(false),
+	_sign_grade(MIN_GRADE), _exec_grade(MIN_GRADE)
 {
 }
 
@@ -63,7 +63,7 @@ std::ostream &operator<<(std::ostream &os, const AForm &f)
 {
 	os << f.getName() << " (target: " << f.getTarget() << "), signed: "
 	<< f.getSigned()
-	<< ",needs grade " << f.getSignGrade() << " for getting signed and grade "
+	<< ", needs grade " << f.getSignGrade() << " for getting signed and grade "
 	<< f.getExecGrade() << " for getting executed" << std::endl;
 	return (os);
 }

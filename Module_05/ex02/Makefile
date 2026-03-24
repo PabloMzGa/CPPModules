@@ -6,7 +6,7 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2026/03/18 18:46:14 by pablo            ###   ########.fr        #
+#    Updated: 2026/03/24 19:18:05 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,12 +17,18 @@ BUILD_DIR = build
 NAME = $(BUILD_DIR)/bureaucrats
 
 HEADERS = Bureaucrat.hpp \
-		  Form.hpp \
+		  AForm.hpp \
+		  ShrubberyCreationForm.hpp \
+		  RobotomyRequestForm.hpp \
+		  PresidentialPardonForm.hpp \
 
 
 SRC =	main.cpp \
 		Bureaucrat.cpp \
-		Form.cpp \
+		AForm.cpp \
+		ShrubberyCreationForm.cpp \
+		RobotomyRequestForm.cpp \
+		PresidentialPardonForm.cpp \
 
 OBJ_DIR = $(BUILD_DIR)/obj
 OBJ = $(addprefix $(OBJ_DIR)/, $(SRC:.cpp=.o))
