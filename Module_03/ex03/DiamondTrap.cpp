@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/23 20:59:25 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/13 14:33:56 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/03/26 20:15:33 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,13 +59,7 @@ DiamondTrap::~DiamondTrap()
 
 void DiamondTrap::attack(const std::string &target)
 {
-	if (hp > 0 && ep > 0)
-	{
-		--ep;
-		std::cout << "[ScavTrap] attack() called by '" << name << "' on '" << target << "'" << std::endl;
-	}
-	else
-		std::cout << "[ScavTrap] attack() failed: insufficient HP or EP" << std::endl;
+	ScavTrap::attack(target);
 }
 
 void DiamondTrap::whoAmI()
