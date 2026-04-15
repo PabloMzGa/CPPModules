@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 18:29:02 by pabmart2          #+#    #+#             */
-/*   Updated: 2026/04/15 19:04:17 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/15 20:14:13 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,10 +97,10 @@ static void printPseudoLog(PseudoType p)
 	default:
 		return;
 	}
-	std::cout << "char: impossible\n";
-	std::cout << "int: impossible\n";
-	std::cout << "float: " << f << '\n';
-	std::cout << "double: " << d << '\n';
+	std::cout << "char: impossible" << std::endl;
+	std::cout << "int: impossible" << std::endl;
+	std::cout << "float: " << f << std::endl;
+	std::cout << "double: " << d << std::endl;
 }
 
 /**
@@ -251,13 +251,13 @@ static void printResult(char c, int i, float f, double d)
 {
 
 	if (std::isprint(static_cast<unsigned char>(c)))
-		std::cout << "char: " << c << '\n';
+		std::cout << "char: " << c << std::endl;
 	else
-		std::cout << "char: Non displayable\n";
-	std::cout << "int: " << i << '\n';
+		std::cout << "char: Non displayable" << std::endl;
+	std::cout << "int: " << i << std::endl;
 	std::cout << std::fixed << std::setprecision(1);
-	std::cout << "float: " << f << "f\n";
-	std::cout << "double: " << d << '\n';
+	std::cout << "float: " << f << "f" << std::endl;
+	std::cout << "double: " << d << std::endl;
 }
 
 /////////////////////////////////// MEMBERS ////////////////////////////////////
