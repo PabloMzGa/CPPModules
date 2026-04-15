@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/25 18:29:02 by pabmart2          #+#    #+#             */
-/*   Updated: 2026/04/15 18:43:30 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/15 19:04:17 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,29 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
+////////////////////////////////// CANONICAL ///////////////////////////////////
+
+ScalarConverter::ScalarConverter()
+{
+}
+
+ScalarConverter::ScalarConverter(const ScalarConverter &other)
+{
+	(void)other;
+}
+
+ScalarConverter &ScalarConverter::operator=(const ScalarConverter &other)
+{
+	(void)other;
+	return (*this);
+}
+
+ScalarConverter::~ScalarConverter()
+{
+}
+
+/////////////////////////////////// HELPERS ////////////////////////////////////
 
 /**
  * @enum PseudoType
@@ -236,6 +259,8 @@ static void printResult(char c, int i, float f, double d)
 	std::cout << "float: " << f << "f\n";
 	std::cout << "double: " << d << '\n';
 }
+
+/////////////////////////////////// MEMBERS ////////////////////////////////////
 
 /**
  * @brief Convert a string literal to char, int, float and double and print.

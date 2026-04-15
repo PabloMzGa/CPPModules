@@ -1,30 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ScalarConverter.hpp                                :+:      :+:    :+:   */
+/*   Data.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/25 18:29:02 by pabmart2          #+#    #+#             */
-/*   Updated: 2026/04/15 19:03:32 by pablo            ###   ########.fr       */
+/*   Created: 2026/04/15 19:05:00 by pablo             #+#    #+#             */
+/*   Updated: 2026/04/15 18:58:33 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SCALARCONVERTER_HPP
-# define SCALARCONVERTER_HPP
+#include "Data.hpp"
 
-#include <string>
-class ScalarConverter
+Data::Data() : _value(0)
 {
-	public:
-	static void convert (std::string literal);
+}
 
-	private:
-		ScalarConverter();
-		ScalarConverter(const ScalarConverter &other);
-		ScalarConverter &operator=(const ScalarConverter &other);
-		~ScalarConverter();
+Data::Data(const Data &src)
+{
+	*this = src;
+}
 
-};
+Data &Data::operator=(const Data &rhs)
+{
+	if (this != &rhs)
+		_value = rhs._value;
+	return (*this);
+}
 
-#endif
+Data::~Data()
+{
+}
+
+int	Data::getValue() const
+{
+	return (_value);
+}
+
+void	Data::setValue(int value)
+{
+	_value = value;
+}

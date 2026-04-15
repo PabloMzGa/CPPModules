@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ScalarConverter.hpp                                :+:      :+:    :+:   */
+/*   Data.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/25 18:29:02 by pabmart2          #+#    #+#             */
-/*   Updated: 2026/04/15 19:03:32 by pablo            ###   ########.fr       */
+/*   Created: 2026/04/15 19:05:00 by pablo             #+#    #+#             */
+/*   Updated: 2026/04/15 18:58:31 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SCALARCONVERTER_HPP
-# define SCALARCONVERTER_HPP
+#ifndef DATA_HPP
+# define DATA_HPP
 
-#include <string>
-class ScalarConverter
+class Data
 {
-	public:
-	static void convert (std::string literal);
-
 	private:
-		ScalarConverter();
-		ScalarConverter(const ScalarConverter &other);
-		ScalarConverter &operator=(const ScalarConverter &other);
-		~ScalarConverter();
+		int	_value;
 
+	public:
+		Data();
+		Data(const Data &src);
+		Data &operator=(const Data &rhs);
+		~Data();
+
+		int	getValue() const;
+		void	setValue(int value);
 };
 
 #endif
