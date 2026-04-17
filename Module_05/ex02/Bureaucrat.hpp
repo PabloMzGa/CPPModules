@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Bureaucrat.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 16:54:17 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/18 19:15:05 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/17 14:13:22 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class Bureaucrat
   public:
 	Bureaucrat();
 	Bureaucrat(std::string name, int grade);
-	Bureaucrat(Bureaucrat &copy);
+	Bureaucrat(const Bureaucrat &copy);
 	Bureaucrat &operator=(const Bureaucrat &src);
 	~Bureaucrat();
 
@@ -48,9 +48,9 @@ class Bureaucrat
 		virtual const char *what() const throw();
 	};
 
-  private:
-	std::string _name;
-	int _grade;
+	private:
+		const std::string _name;
+		int _grade;
 };
 
 std::ostream &operator<<(std::ostream &os, const Bureaucrat &b);

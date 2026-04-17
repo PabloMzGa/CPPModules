@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Form.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 18:01:41 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/18 18:55:40 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/17 15:00:54 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ class Form
   public:
 	Form();
 	Form(std::string name, const int sign_grade, const int exec_grade);
-	Form(Form &copy);
+	Form(const Form &copy);
 	Form &operator=(const Form &src);
 	~Form();
 
@@ -48,11 +48,11 @@ class Form
 
 	void beSigned(const Bureaucrat &b);
 
-  private:
-	std::string _name;
-	bool _signed;
-	int _sign_grade;
-	int _exec_grade;
+	private:
+		const std::string _name;
+		bool _signed;
+		const int _sign_grade;
+		const int _exec_grade;
 };
 
 std::ostream &operator<<(std::ostream &os, const Form &f);

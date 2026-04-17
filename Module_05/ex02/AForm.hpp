@@ -27,7 +27,7 @@ class AForm
 	AForm();
 	AForm(std::string name, const int sign_grade, const int exec_grade,
 		std::string target);
-	AForm(AForm &copy);
+	AForm(const AForm &copy);
 	AForm &operator=(const AForm &src);
 	virtual ~AForm();
 
@@ -61,12 +61,12 @@ class AForm
 	void beSigned(const Bureaucrat &b);
 	virtual void execute(Bureaucrat const &executor) = 0;
 
-  private:
-	std::string _name;
-	std::string _target;
-	bool _signed;
-	int _sign_grade;
-	int _exec_grade;
+	private:
+		const std::string _name;
+		std::string _target;
+		bool _signed;
+		const int _sign_grade;
+		const int _exec_grade;
 };
 
 std::ostream &operator<<(std::ostream &os, const AForm &f);

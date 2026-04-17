@@ -17,26 +17,20 @@
 
 ////////////////////////////////// CANONICAL ///////////////////////////////////
 
-Bureaucrat::Bureaucrat()
-{
-	_name = "default";
-	_grade = MIN_GRADE;
-}
+Bureaucrat::Bureaucrat() : _name("default"), _grade(MIN_GRADE)
+{}
 
-Bureaucrat::Bureaucrat(std::string name, int grade)
+Bureaucrat::Bureaucrat(std::string name, int grade) : _name(name)
 {
 	if (grade < MAX_GRADE)
 		throw GradeTooHighException();
 	else if (grade > MIN_GRADE)
 		throw GradeTooLowException();
-	_name = name;
 	_grade = grade;
 }
 
-Bureaucrat::Bureaucrat(Bureaucrat &copy)
-{
-	*this = copy;
-}
+Bureaucrat::Bureaucrat(const Bureaucrat &copy) : _name(copy._name), _grade(copy._grade)
+{}
 
 Bureaucrat::~Bureaucrat() {}
 
@@ -44,7 +38,6 @@ Bureaucrat &Bureaucrat::operator=(const Bureaucrat &src)
 {
 	if (this != &src)
 	{
-		this->_name = src._name;
 		this->_grade = src._grade;
 	}
 	return (*this);

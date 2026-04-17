@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AForm.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 18:10:24 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/24 19:21:38 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/17 15:01:35 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,39 +16,29 @@
 
 ////////////////////////////////// CANONICAL ///////////////////////////////////
 
-AForm::AForm() : _name("default"), _target("default"), _signed(false),
-	_sign_grade(MIN_GRADE), _exec_grade(MIN_GRADE)
+AForm::AForm() : _name("default"), _target("default"), _signed(false), _sign_grade(MIN_GRADE), _exec_grade(MIN_GRADE)
 {
 }
 
-AForm::AForm(std::string name, const int sign_grade, const int exec_grade,
-	std::string target)
+AForm::AForm(std::string name, const int sign_grade, const int exec_grade, std::string target)
+	: _name(name), _target(target), _signed(false), _sign_grade(sign_grade), _exec_grade(exec_grade)
 {
 	if (sign_grade < MAX_GRADE || exec_grade < MAX_GRADE)
 		throw GradeTooHighException();
 	else if (sign_grade > MIN_GRADE || exec_grade > MIN_GRADE)
 		throw GradeTooLowException();
-	_name = name;
-	_target = target;
-	_signed = false;
-	_sign_grade = sign_grade;
-	_exec_grade = exec_grade;
 }
 
-AForm::AForm(AForm &copy)
+AForm::AForm(const AForm &copy) : _name(copy._name), _target(copy._target), _signed(copy._signed), _sign_grade(copy._sign_grade), _exec_grade(copy._exec_grade)
 {
-	*this = copy;
 }
 
 AForm &AForm::operator=(const AForm &src)
 {
 	if (this != &src)
 	{
-		this->_name = src._name;
 		this->_target = src._target;
 		this->_signed = src._signed;
-		this->_sign_grade = src._sign_grade;
-		this->_exec_grade = src._exec_grade;
 	}
 	return (*this);
 }

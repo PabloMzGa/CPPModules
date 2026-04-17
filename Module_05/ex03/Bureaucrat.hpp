@@ -26,7 +26,7 @@ class Bureaucrat
   public:
 	Bureaucrat();
 	Bureaucrat(std::string name, int grade);
-	Bureaucrat(Bureaucrat &copy);
+	Bureaucrat(const Bureaucrat &copy);
 	Bureaucrat &operator=(const Bureaucrat &src);
 	~Bureaucrat();
 
@@ -48,9 +48,9 @@ class Bureaucrat
 		virtual const char *what() const throw();
 	};
 
-  private:
-	std::string _name;
-	int _grade;
+	private:
+		const std::string _name;
+		int _grade;
 };
 
 std::ostream &operator<<(std::ostream &os, const Bureaucrat &b);

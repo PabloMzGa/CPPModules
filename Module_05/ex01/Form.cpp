@@ -16,39 +16,28 @@
 
 ////////////////////////////////// CANONICAL ///////////////////////////////////
 
-Form::Form()
+Form::Form() : _name("default"), _signed(false), _sign_grade(MIN_GRADE), _exec_grade(MIN_GRADE)
 {
-	_name = "default";
-	_signed = false;
-	_sign_grade = MIN_GRADE;
-	_exec_grade = MIN_GRADE;
 }
 
 Form::Form(std::string name, const int sign_grade, const int exec_grade)
+	: _name(name), _signed(false), _sign_grade(sign_grade), _exec_grade(exec_grade)
 {
 	if (sign_grade < MAX_GRADE || exec_grade < MAX_GRADE)
 		throw GradeTooHighException();
 	else if (sign_grade > MIN_GRADE || exec_grade > MIN_GRADE)
 		throw GradeTooLowException();
-	_name = name;
-	_signed = false;
-	_sign_grade = sign_grade;
-	_exec_grade = exec_grade;
 }
 
-Form::Form(Form &copy)
+Form::Form(const Form &copy) : _name(copy._name), _signed(copy._signed), _sign_grade(copy._sign_grade), _exec_grade(copy._exec_grade)
 {
-	*this = copy;
 }
 
 Form &Form::operator=(const Form &src)
 {
 	if (this != &src)
 	{
-		this->_name = src._name;
 		this->_signed = src._signed;
-		this->_sign_grade = src._sign_grade;
-		this->_exec_grade = src._exec_grade;
 	}
 	return (*this);
 }
