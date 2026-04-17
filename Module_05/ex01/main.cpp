@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 17:41:09 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/18 19:42:14 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/17 19:33:39 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,21 +113,53 @@ int main()
 
 	// Signing process
 	std::cout << "\n--- Signing process ---\n";
+
+	// Test 1: Bureaucrat with insufficient grade
 	try
 	{
 		Form sform("SignTest", 45, 100);
 		Bureaucrat low("Low", 50);
-		std::cout << low;
+		std::cout << "Bureaucrat: " << low;
 		std::cout << sform;
-		low.signForm(sform); // should fail
-		Bureaucrat high("High", 40);
-		std::cout << high;
-		high.signForm(sform); // should succeed
-		std::cout << sform;
+		std::cout << "Attempting to sign with insufficient grade...\n";
+		low.signForm(sform);
+		std::cout << "Form after attempt: " << sform;
 	}
 	catch (std::exception &e)
 	{
-		std::cout << "Signing exception: " << e.what() << std::endl;
+		std::cout << "Unexpected exception: " << e.what() << std::endl;
+	}
+
+	// Test 2: Bureaucrat with sufficient grade
+	std::cout << "\n--- Test 2: Sufficient grade ---\n";
+	try
+	{
+		Form sform2("SignTest2", 45, 100);
+		Bureaucrat high("High", 40);
+		std::cout << "Bureaucrat: " << high;
+		std::cout << sform2;
+		std::cout << "Attempting to sign with sufficient grade...\n";
+		high.signForm(sform2);
+		std::cout << "Form after signing: " << sform2;
+	}
+	catch (std::exception &e)
+	{
+		std::cout << "Unexpected exception: " << e.what() << std::endl;
+	}
+
+	// Test 3: Try to sign already signed form
+	std::cout << "\n--- Test 3: Already signed form ---\n";
+	try
+	{
+		Form sform3("SignTest3", 45, 100);
+		Bureaucrat high("High", 40);
+		high.signForm(sform3);
+		std::cout << "Form is now signed. Trying to sign again...\n";
+		high.signForm(sform3);
+	}
+	catch (std::exception &e)
+	{
+		std::cout << "Unexpected exception: " << e.what() << std::endl;
 	}
 
 	return 0;

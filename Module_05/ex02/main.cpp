@@ -51,7 +51,7 @@ static void testShrubbery()
 	try
 	{
 		action("Low tries to execute ShrubberyCreationForm");
-		form.execute(low);
+		low.executeForm(form);
 	}
 	catch (const std::exception &e)
 	{
@@ -62,7 +62,7 @@ static void testShrubbery()
 	try
 	{
 		action("Executor executes ShrubberyCreationForm");
-		form.execute(executor);
+		executor.executeForm(form);
 		std::cout << "Shrubbery file should be created: home_shrubbery"
 			<< std::endl;
 	}
@@ -91,7 +91,7 @@ static void testRobotomy()
 	try
 	{
 		action("Driller tries to execute unsigned RobotomyRequestForm");
-		unsignedForm.execute(executor);
+		executor.executeForm(unsignedForm);
 	}
 	catch (const std::exception &e)
 	{
@@ -106,7 +106,7 @@ static void testRobotomy()
 		try
 		{
 			actionAttempt("Driller executes RobotomyRequestForm", i + 1);
-			signedForm.execute(executor);
+			executor.executeForm(signedForm);
 		}
 		catch (const std::exception &e)
 		{
@@ -138,7 +138,7 @@ static void testPresidential()
 	try
 	{
 		action("Intern tries to execute PresidentialPardonForm");
-		form.execute(low);
+		low.executeForm(form);
 	}
 	catch (const std::exception &e)
 	{
@@ -149,7 +149,7 @@ static void testPresidential()
 	try
 	{
 		action("President executes PresidentialPardonForm");
-		form.execute(executor);
+		executor.executeForm(form);
 	}
 	catch (const std::exception &e)
 	{

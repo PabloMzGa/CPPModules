@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 19:43:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/24 19:20:20 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/17 19:35:21 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class ShrubberyCreationForm : public AForm
     ShrubberyCreationForm &operator=(const ShrubberyCreationForm &src);
     ~ShrubberyCreationForm();
 
-    virtual void execute(Bureaucrat const &executor);
+    virtual void execute(Bureaucrat const &executor) const;
 };
 
 

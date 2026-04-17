@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AForm.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 18:01:41 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/17 15:01:36 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/17 19:30:09 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ class AForm
 	int getExecGrade() const;
 
 	void beSigned(const Bureaucrat &b);
-	virtual void execute(Bureaucrat const &executor) = 0;
+	virtual void execute(Bureaucrat const &executor) const = 0;
 
 	private:
 		const std::string _name;

@@ -21,7 +21,7 @@ static void testValidForm(Intern &intern, const std::string &formName,
 		form = intern.makeForm(formName, target);
 		std::cout << *form;
 		boss.signForm(*form);
-		form->execute(boss);
+		boss.executeForm(*form);
 		std::cout << "Execution done" << std::endl;
 	}
 	catch (const std::exception &e)

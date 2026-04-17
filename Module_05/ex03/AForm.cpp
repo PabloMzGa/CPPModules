@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   AForm.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 18:10:24 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/17 15:01:37 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/17 19:48:51 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void AForm::beSigned(const Bureaucrat &b)
 	_signed = true;
 }
 
-void AForm::execute(Bureaucrat const &executor)
+void AForm::execute(Bureaucrat const &executor) const
 {
 	if (executor.getGrade() > _exec_grade)
 		throw GradeTooLowException();

@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 19:50:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/03/24 19:20:19 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/17 19:48:51 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,7 @@ PresidentialPardonForm::operator=(const PresidentialPardonForm &src)
 
 PresidentialPardonForm::~PresidentialPardonForm() {}
 
-
-void PresidentialPardonForm::execute(Bureaucrat const &executor)
+void PresidentialPardonForm::execute(Bureaucrat const &executor) const
 {
 	try
 	{

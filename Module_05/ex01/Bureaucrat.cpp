@@ -3,22 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   Bureaucrat.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 17:21:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/17 14:13:21 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/17 19:42:14 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Bureaucrat.hpp"
+#include "Form.hpp"
 #include <iostream>
 #include <ostream>
-#include "Form.hpp"
 
 ////////////////////////////////// CANONICAL ///////////////////////////////////
 
-Bureaucrat::Bureaucrat() : _name("default"), _grade(MIN_GRADE)
-{}
+Bureaucrat::Bureaucrat() : _name("default"), _grade(MIN_GRADE) {}
 
 Bureaucrat::Bureaucrat(std::string name, int grade) : _name(name)
 {
@@ -29,8 +28,10 @@ Bureaucrat::Bureaucrat(std::string name, int grade) : _name(name)
 	_grade = grade;
 }
 
-Bureaucrat::Bureaucrat(const Bureaucrat &copy) : _name(copy._name), _grade(copy._grade)
-{}
+Bureaucrat::Bureaucrat(const Bureaucrat &copy)
+    : _name(copy._name), _grade(copy._grade)
+{
+}
 
 Bureaucrat::~Bureaucrat() {}
 
@@ -93,16 +94,19 @@ void Bureaucrat::demote(unsigned int steps)
 void Bureaucrat::signForm(Form &f)
 {
 	if (f.getSigned())
+	{
 		std::cout << _name << " couldn't sign form " << f.getName()
 		          << ". Is already signed!" << std::endl;
-	else if (f.getSignGrade() < _grade)
-
-		std::cout << _name << " couldn't sign form " << f.getName()
-		          << ". Bureaucrat grade is too low" << std::endl;
-	else
+		return;
+	}
+	try
 	{
 		f.beSigned(*this);
 		std::cout << _name << " signed form " << f.getName() << std::endl;
-		return;
+	}
+	catch (const std::exception &e)
+	{
+		std::cout << _name << " couldn't sign form " << f.getName() << ". "
+		          << e.what() << std::endl;
 	}
 }
