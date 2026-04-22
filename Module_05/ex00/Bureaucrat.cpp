@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 17:21:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/17 14:03:10 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/22 20:58:50 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int Bureaucrat::getGrade() const
 
 void Bureaucrat::promote(unsigned int steps)
 {
-	if (steps - _grade < MAX_GRADE)
+	if (steps >= static_cast<unsigned int>(_grade))
 		throw GradeTooHighException();
 	_grade -= steps;
 }
@@ -84,6 +84,6 @@ void Bureaucrat::promote(unsigned int steps)
 void Bureaucrat::demote(unsigned int steps)
 {
 	if (steps + _grade > MIN_GRADE)
-		throw GradeTooHighException();
+		throw GradeTooLowException();
 	_grade += steps;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   RobotomyRequestForm.cpp                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 19:50:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/17 19:36:12 by pablo            ###   ########.fr       */
+/*   Updated: 2026/04/22 21:03:37 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ RobotomyRequestForm::RobotomyRequestForm(std::string target)
 {
 }
 
-RobotomyRequestForm::RobotomyRequestForm(RobotomyRequestForm &copy)
+RobotomyRequestForm::RobotomyRequestForm(const RobotomyRequestForm &copy)
     : AForm(copy)
 {
 }
