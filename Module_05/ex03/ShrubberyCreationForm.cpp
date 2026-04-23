@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 19:50:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/22 21:03:43 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/23 18:55:01 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ void ShrubberyCreationForm::execute(Bureaucrat const &executor) const
 	std::string filename;
 
 	filename = getTarget() + "_shrubbery";
+	AForm::execute(executor);
 	try
 	{
-		AForm::execute(executor);
 		std::ofstream ofs;
 		ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 		ofs.open(filename.c_str());
@@ -75,11 +75,5 @@ void ShrubberyCreationForm::execute(Bureaucrat const &executor) const
 	{
 		std::cerr << "Error creating shrubbery file '" << filename << "': "
 			<< e.what() << std::endl;
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr << "Error executing form '" << getName() << "': "
-			<< e.what() << std::endl;
-		throw;
 	}
 }

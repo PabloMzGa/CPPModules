@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 19:50:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/22 21:03:41 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/23 18:55:00 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,7 @@ PresidentialPardonForm::~PresidentialPardonForm() {}
 
 void PresidentialPardonForm::execute(Bureaucrat const &executor) const
 {
-	try
-	{
-		AForm::execute(executor);
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr << "Error executing form '" << getName() << "': " << e.what()
-		          << std::endl;
-		throw;
-	}
+	AForm::execute(executor);
 	std::cout << getTarget() << " has been pardoned by the President"
 				<< "  Zaphod Beeblebrox" << std::endl;
 

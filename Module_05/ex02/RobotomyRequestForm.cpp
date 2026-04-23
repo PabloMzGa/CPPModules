@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/18 19:50:10 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/22 21:03:37 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/04/23 18:54:52 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,16 +55,7 @@ static inline bool random50()
 
 void RobotomyRequestForm::execute(Bureaucrat const &executor) const
 {
-	try
-	{
-		AForm::execute(executor);
-	}
-	catch (const std::exception &e)
-	{
-		std::cerr << "Error executing form '" << getName() << "': " << e.what()
-		          << std::endl;
-		throw;
-	}
+	AForm::execute(executor);
 
 	static bool seeded = false;
 	if (!seeded)
