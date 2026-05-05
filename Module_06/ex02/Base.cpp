@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Base.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 19:44:33 by pablo             #+#    #+#             */
-/*   Updated: 2026/04/15 20:11:29 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/05 20:49:29 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,32 @@ void Base::identify(Base *p)
 
 void Base::identify(Base &p)
 {
-	if (dynamic_cast<A *>(&p))
+	try
+	{
+		(void)dynamic_cast<A &>(p);
 		std::cout << "Pointer is A" << std::endl;
-	else if (dynamic_cast<B *>(&p))
+		return;
+	}
+	catch (const std::exception &)
+	{
+	}
+	try
+	{
+		(void)dynamic_cast<B &>(p);
 		std::cout << "Pointer is B" << std::endl;
-	else if (dynamic_cast<C *>(&p))
+		return;
+	}
+	catch (const std::exception &)
+	{
+	}
+	try
+	{
+		(void)dynamic_cast<C &>(p);
 		std::cout << "Pointer is C" << std::endl;
+		return;
+	}
+	catch (const std::exception &)
+	{
+	}
+	std::cout << "Error identifying pointer" << std::endl;
 }
