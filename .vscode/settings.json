@@ -51,7 +51,10 @@
 		"optional": "cpp",
 		"ranges": "cpp",
 		"span": "cpp",
-		"sstream": "cpp"
+		"sstream": "cpp",
+		"list": "cpp",
+		"fstream": "cpp",
+		"*.tpp": "cpp"
 	},
 	"C_Cpp.default.cppStandard": "c++98"
 }

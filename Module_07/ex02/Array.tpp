@@ -3,17 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   Array.tpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 19:17:41 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/04 20:56:09 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/12 20:50:16 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdexcept>
-
-#ifndef ARRAY_TPP
-#define ARRAY_TPP
 
 /////////////////////////////////// ORTHODOX ///////////////////////////////////
 
@@ -80,5 +77,3 @@ size_t Array<T>::size() const
 {
 	return _size;
 }
-
-#endif
