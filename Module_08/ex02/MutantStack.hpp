@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MutantStack.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/12 19:47:56 by pabmart2          #+#    #+#             */
-/*   Updated: 2026/05/14 19:09:53 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/05/15 13:03:45 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ class MutantStack : public std::stack<T, Container>{
 		MutantStack &operator=(const MutantStack &src);
 		~MutantStack();
 
-		using iterator = typename Container::iterator;
-		using const_iterator = typename Container::const_iterator;
+		typedef typename Container::iterator iterator;
+		typedef typename Container::const_iterator const_iterator;
 
 		iterator begin(){return this->c.begin();}
 		iterator end(){return this->c.end();}
