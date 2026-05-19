@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 13:58:14 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/19 17:54:06 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/19 18:33:10 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,35 +18,19 @@
 #include <fstream>
 #include <stdexcept>
 
-/* Error codes and helpers are declared inside the class to keep the header
-   limited to the class declaration only. Definitions are in the .cpp file. */
-
 #define CSV_HEADER "date,exchange_rate"
 #define INPUT_HEADER "date | value"
 
-/**
- * @class BitcoinExchange
- * @brief Loads a CSV exchange-rate database and provides input processing.
- *
- * The two-argument constructor loads only the CSV database from `data_path`
- * into the internal `_data` map. The `input_path` parameter is accepted for
- * API compatibility but is not parsed at construction time; call
- * `processInputFile` to process an input file on demand.
- *
- * This class targets portability to older compilers (C++98 compatible
- * parsing) so it uses `std::stringstream` for strict numeric parsing.
- */
 class BitcoinExchange
 {
 	public:
 		BitcoinExchange();
 		BitcoinExchange(const BitcoinExchange &src);
-		BitcoinExchange(std::string data_path, std::string input_path);
+		BitcoinExchange(std::string data_path);
 		BitcoinExchange &operator=(const BitcoinExchange &src);
 		~BitcoinExchange();
 
 		void processInput(const std::string &input_path);
-		const std::map<std::string, float> &getData() const;
 
 	private:
 		enum ErrorCode

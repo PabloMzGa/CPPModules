@@ -6,12 +6,9 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 14:09:15 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/19 18:05:36 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/19 18:34:11 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// TODO: Revisar todo y asegurarse que está limpio, terminar la lógica de
-// process input
 
 #include "BitcoinExchange.hpp"
 #include <algorithm>
@@ -21,6 +18,52 @@
 #include <sstream>
 #include <stdexcept>
 
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// ORTHODOX ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Builds an empty exchange database.
+ */
+BitcoinExchange::BitcoinExchange() {}
+
+/**
+ * @brief Copies the internal exchange-rate map from another instance.
+ * @param src Source object.
+ */
+BitcoinExchange::BitcoinExchange(const BitcoinExchange &src)
+{
+	_data = src._data;
+}
+
+/**
+ * @brief Assigns the internal exchange-rate map from another instance.
+ * @param src Source object.
+ * @return Reference to this object.
+ */
+BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &src)
+{
+	if (this != &src)
+	{
+		_data = src._data;
+	}
+	return *this;
+}
+
+/**
+ * @brief Destroys the exchange object.
+ */
+BitcoinExchange::~BitcoinExchange() {}
+
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// HELPERS ////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Removes leading and trailing whitespace from a string.
+ * @param s Input string.
+ * @return Trimmed copy of the input string.
+ */
 static std::string trim(const std::string &s)
 {
 	std::size_t start = 0;
@@ -33,6 +76,11 @@ static std::string trim(const std::string &s)
 	return s.substr(start, end - start);
 }
 
+/**
+ * @brief Checks whether a string matches the expected `YYYY-MM-DD` format.
+ * @param date Date string to validate.
+ * @return `true` if the format is valid, `false` otherwise.
+ */
 static bool is_valid_date(const std::string &date)
 {
 	if (date.size() != 10)
@@ -57,6 +105,15 @@ static bool is_valid_date(const std::string &date)
 	return true;
 }
 
+/**
+ * @brief Throws a runtime error associated with a class error code.
+ *
+ * The helper centralizes every parser and loader error so the rest of the
+ * implementation only needs to choose an error category and provide optional
+ * context. The message is normalized before the exception is thrown.
+ * @param code Error code that determines the message.
+ * @param detail Extra context appended to the message when relevant.
+ */
 void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code,
                                   const std::string &detail)
 {
@@ -106,9 +163,20 @@ void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code,
 }
 
 /**
- * Generic line parser for delimited files. If `dest` is non-null the parsed
- * pair is inserted into the map; otherwise the parsed values are returned
- * through `out_key`/`out_value` and no insertion occurs.
+ * @brief Parses a delimited record and optionally stores it in a map.
+ *
+ * The parser is strict: it requires exactly one separator, trims both fields,
+ * validates the date key, and parses the numeric value without trailing
+ * garbage. It is shared by both the CSV loader and the user input parser so
+ * the two file formats follow the same validation rules.
+ * @param line Raw line to parse.
+ * @param out_key Parsed key output.
+ * @param out_value Parsed value output.
+ * @param n_line Current line index.
+ * @param separator Field separator.
+ * @param header Expected header at line zero.
+ * @param dest Optional destination map.
+ * @return `true` if parsing succeeded.
  */
 bool BitcoinExchange::parse_delimited_line(const std::string &line,
                                            std::string &out_key,
@@ -176,6 +244,15 @@ bool BitcoinExchange::parse_delimited_line(const std::string &line,
 	return true;
 }
 
+/**
+ * @brief Reads the CSV file and loads entries into `_data`.
+ *
+ * The first line is validated as the header, then each following record is
+ * parsed with the shared delimited-line parser. Bad data rows do not abort the
+ * load; instead, they are reported and skipped so the usable rates remain
+ * available.
+ * @param file Open CSV input stream.
+ */
 void BitcoinExchange::parse_csv(std::ifstream &file)
 {
 	std::string line;
@@ -200,22 +277,61 @@ void BitcoinExchange::parse_csv(std::ifstream &file)
 		++line_counter;
 	}
 }
+/**
+ * @brief Finds the exact or nearest lower date in the database.
+ * @param key Date to search.
+ * @return Iterator to the best matching entry, or `end()` if none exists.
+ */
+std::map<std::string, float>::const_iterator
+BitcoinExchange::getClosestRate(const std::string &key) const
+{
+	std::map<std::string, float>::const_iterator it = _data.lower_bound(key);
+	if (it != _data.end() && it->first == key)
+		return it;
+	if (it == _data.begin())
+		return _data.end();
+	if (it == _data.end())
+		return --it;
+	return --it;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// WRAPPERS ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @brief Parse a single input-format line (date | value) and return parsed
- * values without inserting into any map.
+ * @brief Parses a line from the input file format.
+ *
+ * This wrapper enforces the `date | value` layout used by the exercise input
+ * file and delegates the actual validation to the generic parser.
+ * @param line Raw line to parse.
+ * @param out_key Parsed date output.
+ * @param out_value Parsed amount output.
+ * @param n_line Current line index.
+ * @return `true` if parsing succeeded.
  */
 bool BitcoinExchange::parse_input_line(const std::string &line,
                                        std::string &out_key, float &out_value,
                                        unsigned int n_line)
 {
 	return parse_delimited_line(line, out_key, out_value, n_line, '|',
-	                            INPUT_HEADER, 0);
+	                            INPUT_HEADER);
 }
 
-BitcoinExchange::BitcoinExchange(std::string data_path, std::string input_path)
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////// CONSTRUCTORS /////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Loads the CSV database from the provided path.
+ *
+ * The constructor opens the historical-price file, validates it, and loads the
+ * resulting rates into the internal map so the object is ready for lookups.
+ * @param data_path Path to the CSV exchange-rate file.
+ */
+BitcoinExchange::BitcoinExchange(std::string data_path)
 {
-	(void)input_path;
 	std::ifstream data_file;
 	try
 	{
@@ -230,46 +346,19 @@ BitcoinExchange::BitcoinExchange(std::string data_path, std::string input_path)
 	}
 }
 
-BitcoinExchange::BitcoinExchange() {}
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////// PUBLIC MEMBERS ////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-BitcoinExchange::BitcoinExchange(const BitcoinExchange &src)
-{
-	*this = src;
-}
-
-BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &src)
-{
-	if (this != &src)
-	{
-		_data = src._data;
-	}
-	return *this;
-}
-
-BitcoinExchange::~BitcoinExchange() {}
-
-const std::map<std::string, float> &BitcoinExchange::getData() const
-{
-	return _data;
-}
-
-std::map<std::string, float>::const_iterator
-BitcoinExchange::getClosestRate(const std::string &key) const
-{
-	std::map<std::string, float>::const_iterator it = _data.lower_bound(key);
-	if (it != _data.end() && it->first == key)
-		return it;
-	if (it == _data.begin())
-		return _data.end();
-	if (it == _data.end())
-	{
-		--it;
-		return it;
-	}
-	--it;
-	return it;
-}
-
+/**
+ * @brief Processes an input file and prints the converted values.
+ *
+ * The function reads the file line by line, validates the header, rejects
+ * malformed or out-of-range values, looks up the closest rate for each valid
+ * date, and prints the conversion result. Errors are reported per line so a
+ * single bad entry does not prevent the rest of the file from being processed.
+ * @param input_path Path to the input file.
+ */
 void BitcoinExchange::processInput(const std::string &input_path)
 {
 	std::ifstream file;
@@ -306,10 +395,6 @@ void BitcoinExchange::processInput(const std::string &input_path)
 				return;
 			}
 			std::string msg = e.what();
-			/*if (msg.find("negative value") != std::string::npos)
-			    std::cerr << "Error: not a positive number. => " << trim(line)
-			              << std::endl;
-			else*/
 			std::cerr << "Error: " << msg << " => " << trim(line) << std::endl;
 			++line_counter;
 			continue;
@@ -322,9 +407,8 @@ void BitcoinExchange::processInput(const std::string &input_path)
 			++line_counter;
 			continue;
 		}
-		if (line_counter)
+		if (line_counter > 0)
 		{
-
 			std::map<std::string, float>::const_iterator rate =
 			    getClosestRate(key);
 			if (rate == _data.end())
