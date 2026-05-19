@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 13:58:14 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/15 19:36:27 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/19 17:54:06 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,8 @@ class BitcoinExchange
 
 		static bool parse_input_line(const std::string &line, std::string &out_key,
 							 float &out_value, unsigned int n_line);
+		std::map<std::string, float>::const_iterator
+		getClosestRate(const std::string &key) const;
 		void parse_csv(std::ifstream &file);
 		std::map<std::string, float> _data;
 

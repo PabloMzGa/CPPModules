@@ -6,12 +6,12 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 14:09:15 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/15 19:39:35 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/19 18:05:36 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//TODO: Revisar todo y asegurarse que está limpio, terminar la lógica de
-//process input
+// TODO: Revisar todo y asegurarse que está limpio, terminar la lógica de
+// process input
 
 #include "BitcoinExchange.hpp"
 #include <algorithm>
@@ -57,46 +57,50 @@ static bool is_valid_date(const std::string &date)
 	return true;
 }
 
-void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code, const std::string &detail)
+void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code,
+                                  const std::string &detail)
 {
 	std::string msg;
 	switch (code)
 	{
-		case BitcoinExchange::InvalidHeader:
-			msg = "invalid header";
-			break;
-		case BitcoinExchange::InvalidStructure:
-			msg = "invalid structure";
-			break;
-		case BitcoinExchange::InvalidFields:
-			msg = "invalid fields";
-			break;
-		case BitcoinExchange::ParseValue:
-			msg = "error parsing value";
-			break;
-		case BitcoinExchange::NegativeValue:
-			msg = "negative value";
-			break;
-		case BitcoinExchange::MalformedDate:
-			msg = "malformed date";
-			break;
-		case BitcoinExchange::FileOpen:
-			msg = "Unable to open csv file";
-			break;
-		case BitcoinExchange::DataNotLoaded:
-			msg = "Data not loaded";
-			break;
-		case BitcoinExchange::InputOpen:
-			msg = "Unable to open input file";
-			break;
-		case BitcoinExchange::TooLarge:
-			msg = "too large a number";
-			break;
-		default:
-			msg = detail.empty() ? "Unknown error" : detail;
-			break;
+	case BitcoinExchange::InvalidHeader:
+		msg = "invalid header";
+		break;
+	case BitcoinExchange::InvalidStructure:
+		msg = "invalid structure";
+		break;
+	case BitcoinExchange::InvalidFields:
+		msg = "invalid fields";
+		break;
+	case BitcoinExchange::ParseValue:
+		msg = "error parsing value";
+		break;
+	case BitcoinExchange::NegativeValue:
+		msg = "negative value";
+		break;
+	case BitcoinExchange::MalformedDate:
+		msg = "malformed date";
+		break;
+	case BitcoinExchange::FileOpen:
+		msg = "Unable to open csv file";
+		break;
+	case BitcoinExchange::DataNotLoaded:
+		msg = "Data not loaded";
+		break;
+	case BitcoinExchange::InputOpen:
+		msg = "Unable to open input file";
+		break;
+	case BitcoinExchange::TooLarge:
+		msg = "too large a number";
+		break;
+	default:
+		msg = detail.empty() ? "Unknown error" : detail;
+		break;
 	}
-	if (!detail.empty() && (code != BitcoinExchange::FileOpen && code != BitcoinExchange::InputOpen && code != BitcoinExchange::DataNotLoaded && code != BitcoinExchange::TooLarge))
+	if (!detail.empty() && (code != BitcoinExchange::FileOpen &&
+	                        code != BitcoinExchange::InputOpen &&
+	                        code != BitcoinExchange::DataNotLoaded &&
+	                        code != BitcoinExchange::TooLarge))
 		msg += std::string(": ") + detail;
 	throw std::runtime_error(msg);
 }
@@ -125,9 +129,9 @@ bool BitcoinExchange::parse_delimited_line(const std::string &line,
 	}
 
 	if (std::count(line.begin(), line.end(), separator) != 1)
-		{
-			throw_error(InvalidStructure, "");
-		}
+	{
+		throw_error(InvalidStructure, "");
+	}
 
 	std::stringstream ss(line);
 	std::string k, v;
@@ -139,7 +143,7 @@ bool BitcoinExchange::parse_delimited_line(const std::string &line,
 	std::string key_trim = trim(k);
 	std::string val_trim = trim(v);
 	if (key_trim.empty() || val_trim.empty())
-		{
+	{
 		throw_error(InvalidFields, "");
 	}
 
@@ -249,6 +253,23 @@ const std::map<std::string, float> &BitcoinExchange::getData() const
 	return _data;
 }
 
+std::map<std::string, float>::const_iterator
+BitcoinExchange::getClosestRate(const std::string &key) const
+{
+	std::map<std::string, float>::const_iterator it = _data.lower_bound(key);
+	if (it != _data.end() && it->first == key)
+		return it;
+	if (it == _data.begin())
+		return _data.end();
+	if (it == _data.end())
+	{
+		--it;
+		return it;
+	}
+	--it;
+	return it;
+}
+
 void BitcoinExchange::processInput(const std::string &input_path)
 {
 	std::ifstream file;
@@ -274,7 +295,7 @@ void BitcoinExchange::processInput(const std::string &input_path)
 		std::string key;
 		try
 		{
-				parse_input_line(line, key, value, line_counter);
+			parse_input_line(line, key, value, line_counter);
 		}
 		catch (const std::exception &e)
 		{
@@ -285,21 +306,35 @@ void BitcoinExchange::processInput(const std::string &input_path)
 				return;
 			}
 			std::string msg = e.what();
-			if (msg.find("negative value") != std::string::npos)
-				std::cerr << "Error: not a positive number. => " << trim(line)
-						  << std::endl;
-			else
-				std::cerr << "Error: " << msg << " => " << trim(line)
-						  << std::endl;
+			/*if (msg.find("negative value") != std::string::npos)
+			    std::cerr << "Error: not a positive number. => " << trim(line)
+			              << std::endl;
+			else*/
+			std::cerr << "Error: " << msg << " => " << trim(line) << std::endl;
 			++line_counter;
 			continue;
 		}
 
 		if (value > 1000.0f)
 		{
-			std::cerr << "Error: too large a number. => " << trim(line) << std::endl;
+			std::cerr << "Error: too large a number => " << trim(line)
+			          << std::endl;
 			++line_counter;
 			continue;
+		}
+		if (line_counter)
+		{
+
+			std::map<std::string, float>::const_iterator rate =
+			    getClosestRate(key);
+			if (rate == _data.end())
+			{
+				std::cerr << "Error: no rate available for date => " << key
+				          << std::endl;
+				continue;
+			}
+			std::cout << key << " => " << value << " = " << value * rate->second
+			          << std::endl;
 		}
 		++line_counter;
 	}
