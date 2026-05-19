@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 13:58:14 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/19 18:33:10 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/19 18:58:48 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,7 @@
 
 #include <map>
 #include <string>
-#include <fstream>
-#include <stdexcept>
+
 
 #define CSV_HEADER "date,exchange_rate"
 #define INPUT_HEADER "date | value"

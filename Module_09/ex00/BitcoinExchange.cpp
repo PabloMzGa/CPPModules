@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 14:09:15 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/19 18:34:11 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/19 18:58:40 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ BitcoinExchange::BitcoinExchange() {}
  * @param src Source object.
  */
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &src)
+: _data(src._data)
 {
-	_data = src._data;
 }
 
 /**
