@@ -6,15 +6,16 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 18:39:56 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/19 20:33:20 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/20 18:43:43 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "RNP.hpp"
 #include <cctype>
 #include <cstdlib>
-#include <stdexcept>
 #include <sstream>
+#include <stack>
+#include <stdexcept>
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// ORTHODOX ///////////////////////////////////
@@ -32,7 +33,10 @@ RNP::RNP() {}
  *
  * @param src Source object to copy from.
  */
-RNP::RNP(const RNP &src) : _stack(src._stack) {}
+RNP::RNP(const RNP &src)
+{
+	(void)src;
+}
 
 /**
  * @brief Copy assignment operator.
@@ -42,8 +46,7 @@ RNP::RNP(const RNP &src) : _stack(src._stack) {}
  */
 RNP &RNP::operator=(const RNP &src)
 {
-	if (this != &src)
-		this->_stack = src._stack;
+	(void)src;
 	return *this;
 }
 
@@ -65,7 +68,7 @@ RNP::~RNP() {}
  * @return true if the character is one of +, -, *, /.
  * @return false otherwise.
  */
-bool RNP::is_valid_operator(char c)
+static bool is_valid_operator(char c)
 {
 	switch (c)
 	{
@@ -82,7 +85,6 @@ bool RNP::is_valid_operator(char c)
 	}
 }
 
-
 /**
  * @brief Applies an operator to the two top-most stack values.
  *
@@ -90,14 +92,14 @@ bool RNP::is_valid_operator(char c)
  * @throws std::runtime_error If there are not enough operands, if the
  *         operator is invalid, or if a division by zero is attempted.
  */
-void RNP::use_operator(char op)
+static void use_operator(std::stack<int> &st, char op)
 {
-	if (_stack.size() < 2)
+	if (st.size() < 2)
 		throw std::runtime_error("Not enough operands");
-	int rhs = _stack.top();
-	_stack.pop();
-	int lhs = _stack.top();
-	_stack.pop();
+	int rhs = st.top();
+	st.pop();
+	int lhs = st.top();
+	st.pop();
 	int res;
 	switch (op)
 	{
@@ -118,7 +120,7 @@ void RNP::use_operator(char op)
 	default:
 		throw std::runtime_error("Invalid operator");
 	}
-	_stack.push(res);
+	st.push(res);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,11 +139,7 @@ void RNP::use_operator(char op)
  */
 int RNP::calculate(const std::string &input)
 {
-	// reset stack for repeated calls
-	if (!_stack.empty())
-	{
-		_stack = std::stack<int>();
-	}
+	std::stack<int> st;
 	std::istringstream ss(input);
 	std::string token;
 
@@ -149,7 +147,7 @@ int RNP::calculate(const std::string &input)
 	{
 		if (token.size() == 1 && is_valid_operator(token[0]))
 		{
-			use_operator(token[0]);
+			use_operator(st, token[0]);
 		}
 		else
 		{
@@ -158,11 +156,11 @@ int RNP::calculate(const std::string &input)
 			if (!(conv >> v) || !(conv >> std::ws).eof())
 				throw std::runtime_error(std::string("Invalid token: ") +
 				                         token);
-			_stack.push(v);
+			st.push(v);
 		}
 	}
 
-	if (_stack.size() != 1)
+	if (st.size() != 1)
 		throw std::runtime_error("Invalid RPN expression");
-	return _stack.top();
+	return st.top();
 }
