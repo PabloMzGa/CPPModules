@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 18:28:27 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/20 21:13:00 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/21 19:52:25 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,14 +104,14 @@ void PmergeMe::sort()
 	std::cout << std::endl;
 
 	start = clock();
-	merge_sort(_vector);
+	//merge_sort(_vector);
 	end = clock();
 
 	_vector_time_ms +=
 	    static_cast<double>(end - start) * 1000.0 / CLOCKS_PER_SEC;
 
 	start = clock();
-	merge_sort(_deque);
+	//merge_sort(_deque);
 	end = clock();
 
 	_deque_time_ms +=
