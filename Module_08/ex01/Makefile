@@ -16,7 +16,7 @@ CXXFLAGS = -Wall -Wextra -Werror -std=c++98
 BUILD_DIR = build
 NAME = $(BUILD_DIR)/Span
 
-HEADERS = span.hpp \
+HEADERS = Span.hpp \
 
 SRC =	main.cpp \
 		Span.cpp \
