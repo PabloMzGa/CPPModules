@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 18:25:21 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/21 20:20:14 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/05/26 20:02:55 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <stdexcept>
 # include <string>
 # include <vector>
+#include <memory>
 
 class PmergeMe
 {
@@ -37,7 +38,6 @@ class PmergeMe
 	template <typename Container> static bool is_sorted(const Container &src);
 	template <typename Container> static void load_values(const std::string &input,
 		Container &container);
-	template <typename Container> void ford_johnson(Container &c);
 	/*
 	template <typename Container>
 	static void merge(Container left, Container right, Container &src);
@@ -51,7 +51,8 @@ class PmergeMe
 	double _deque_time_ms;
 };
 
-template <typename Container> void PmergeMe::ford_johnson(Container &c)
+template < template <typename, typename> class Container, typename T >
+void ford_johnson(Container<T, std::allocator<T> >&c)
 {
 
 }
