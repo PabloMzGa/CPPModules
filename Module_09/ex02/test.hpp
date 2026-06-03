@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cctype>
 #include <ctime>
 #include <deque>
@@ -8,7 +9,18 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <algorithm>
+
+template <typename Iterator> struct FJBlockInfo
+{
+	Iterator *main;
+	std::size_t main_size;
+	std::size_t main_blocks;
+	Iterator *pend;
+	std::size_t pend_size;
+	std::size_t pend_blocks;
+	std::size_t block_size;
+	std::size_t total_size;
+};
 
 template <typename Iterator>
 void print_iter_array(Iterator *arr, std::size_t size)
@@ -23,7 +35,8 @@ void print_iter_array(Iterator *arr, std::size_t size)
 }
 
 template <typename Container>
-typename Container::iterator *get_iterator_array(Container &cont, std::size_t size)
+typename Container::iterator *get_iterator_array(Container &cont,
+                                                 std::size_t size)
 {
 	typedef typename Container::iterator iterator;
 
@@ -42,63 +55,172 @@ void swap_pairs(Iterator *it_array, std::size_t pair_size, std::size_t pos)
 		std::swap(it_array[i], it_array[i + pair_size]);
 }
 
-template <typename iterator>
-iterator *ford_johnson_insertion(iterator *it_array, std::size_t block_size, size_t size)
+template <typename Iterator>
+void shift_right(Iterator *arr, std::size_t from_index, std::size_t count,
+                 std::size_t shift)
 {
-	if (block_size == 0 || block_size >= size)
-		return it_array;
-	if ((size / block_size) < 3)
-		return it_array;
+	if (count == 0 || shift == 0)
+		return;
+	for (std::size_t i = count; i > 0; --i)
+		arr[from_index + i - 1 + shift] = arr[from_index + i - 1];
+}
 
-	// Half the blocks, multiplied by the number of elements and adding the rest
-	std::size_t pend_blocks = ((size / block_size) / 2);
-	std::size_t pend_size = pend_blocks * block_size + (size % block_size);
+template <typename Iterator>
+std::size_t binary_search_block_pos(int value,
+                                    const FJBlockInfo<Iterator> &info)
+{
+	if (info.block_size == 0 || info.main_blocks == 0)
+		return 0;
+
+	std::size_t left = 0;
+	std::size_t right = info.main_blocks;
+
+	while (left < right)
+	{
+		std::size_t mid = left + (right - left) / 2;
+		std::size_t last_index = (mid + 1) * info.block_size - 1;
+
+		// 🔴 IMPORTANTE: no salirte de main_size
+		if (last_index >= info.main_size)
+			last_index = info.main_size - 1;
+		if (value <= *info.main[last_index])
+			right = mid;
+		else
+			left = mid + 1;
+	}
+
+	return left;
+}
+
+template <typename Iterator>
+FJBlockInfo<Iterator> build_fj_block_info(Iterator *it_array,
+                                          std::size_t block_size, size_t size)
+{
+
+	FJBlockInfo<Iterator> info;
+	info.main = 0;
+	info.pend = 0;
+	info.main_size = 0;
+	info.main_blocks = 0;
+	info.pend_blocks = 0;
+	info.pend_size = 0;
+	info.block_size = block_size;
+	info.total_size = size;
+
+	if (block_size == 0 || block_size >= size)
+		return info;
+	/*
+	if ((size / block_size) < 3)
+	return info;
+	*/
+
+	info.main = new Iterator[size]();
+	info.pend = new Iterator[size]();
 
 	std::size_t main_i = 0;
 	std::size_t pend_i = 0;
-	iterator *main = new iterator[size]();
-	iterator *pend = new iterator[pend_size]();
 
 	for (size_t i = 0; i < size; i += block_size)
 	{
 		std::size_t block = i / block_size;
-		for (size_t j = 0; j < block_size && i + j < size; j++)
-		{
-			if (block % 2 == 0)
-				main[(main_i * 2 * block_size) + j] = it_array[j + i];
-			else
-				pend[pend_i++] = it_array[j + i];
-		}
-		if (block % 2 == 0)
-			++main_i;
-	}
+		std::size_t current_block_size = std::min(block_size, size - i);
 
-	//TODO: insertar por jacobstahl
-	for (size_t i = 0; i < pend_blocks; i--)
-	{
-		int value = pend[i * block_size];
-		int j = main_i/2;
-		while (j > 0)
+		bool goes_to_main = (block == 0 || block % 2 == 1);
+		bool full_block = (current_block_size == block_size);
+
+		// 🔴 Si el bloque es incompleto, NO va a main
+		if (!full_block && block != 0)
+			goes_to_main = false;
+
+		for (size_t j = 0; j < current_block_size; j++)
 		{
-			if (value > *main[j * block_size])
-				j /= 2;
+			if (goes_to_main)
+			{
+				info.main[(main_i * block_size) + j] = it_array[i + j];
+				++info.main_size;
+			}
 			else
 			{
-				for (size_t k = 0; k < block_size; k++)
-				{
-					main[j * block_size + 1] = pend[k]
-				}
-
+				info.pend[pend_i++] = it_array[i + j];
+				++info.pend_size;
 			}
 		}
 
+		if (goes_to_main)
+			++main_i;
+		else if (full_block)
+			++info.pend_blocks;
 	}
-	delete[] pend;
-	return main;
+
+	info.main_blocks = main_i;
+
+	return info;
 }
 
-template <typename iterator>
-iterator *ford_johnson_pairs(iterator *it_array, std::size_t block_size, size_t size)
+//TODO: Ordenar, documentar e incluir orden de Jacobstalh
+
+template <typename Iterator>
+Iterator *ford_johson_insertion(Iterator *it_array, std::size_t block_size,
+                                size_t size)
+{
+	std::cout << "Iniciando inserción" << std::endl;
+
+	if (block_size == 0 || block_size >= size /*|| size / block_size < 3*/)
+		return it_array;
+
+	std::size_t target_main_pos;
+
+	FJBlockInfo<Iterator> info =
+	    build_fj_block_info(it_array, block_size, size);
+
+	if (info.main == 0)
+		return it_array;
+
+	std::cout << "Main = ";
+	print_iter_array(info.main, info.main_size);
+	std::cout << "Pend = ";
+	print_iter_array(info.pend, info.pend_size);
+
+	for (size_t i = 0; i < info.pend_blocks; i++)
+	{
+		// Last value of the current pend block
+		int key = *info.pend[i * block_size + (block_size - 1)];
+
+		target_main_pos = binary_search_block_pos(key, info);
+		shift_right(info.main, target_main_pos * block_size,
+		            info.main_size - target_main_pos * block_size, block_size);
+
+		// Insertion
+		for (size_t j = 0; j < block_size; j++)
+			info.main[target_main_pos * block_size + j] =
+			    info.pend[i * block_size + j];
+		info.main_size += block_size;
+		++info.main_blocks;
+	}
+	// Checks if there are leftovers inside the pend
+	std::size_t leftover = info.pend_size - info.pend_blocks * block_size;
+
+	if (leftover > 0)
+	{
+		// Adds the leftover at the end of main
+		for (std::size_t j = 0; j < leftover; j++)
+			info.main[info.main_size + j] =
+			    info.pend[info.pend_blocks * block_size + j];
+
+		info.main_size += leftover;
+	}
+
+	delete[] info.pend;
+	std::cout << "Block size = " << block_size << " secuencia -> ";
+	print_iter_array(info.main, size);
+	Iterator *result = ford_johson_insertion(info.main, block_size / 2, size);
+	delete[] it_array;
+	return result;
+}
+
+template <typename Iterator>
+Iterator *ford_johnson_pairs(Iterator *it_array, std::size_t block_size,
+                             size_t size)
 {
 	if (block_size == 0 || block_size >= size)
 		return it_array;
@@ -107,7 +229,8 @@ iterator *ford_johnson_pairs(iterator *it_array, std::size_t block_size, size_t 
 
 	for (size_t i = 0; i + double_block_size <= size; i += double_block_size)
 	{
-		if (*it_array[i + block_size - 1] > *it_array[i + double_block_size - 1])
+		if (*it_array[i + block_size - 1] >
+		    *it_array[i + double_block_size - 1])
 			swap_pairs(it_array, block_size, i);
 	}
 
@@ -120,7 +243,15 @@ typename Container::iterator *ford_johnson(Container &cont)
 	typedef typename Container::iterator iterator;
 	std::size_t size = cont.size();
 
-	iterator *it_array = ford_johnson_pairs(
-		get_iterator_array(cont, size), 1, size);
+	iterator *it_array =
+	    ford_johnson_pairs(get_iterator_array(cont, size), 1, size);
+	std::size_t block = 1;
+	while (block * 2 <= size)
+		block *= 2;
+
+	block /= 2; // primer nivel de inserción
+
+	it_array = ford_johson_insertion(it_array, block, size);
+
 	return it_array;
 }
