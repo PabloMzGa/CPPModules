@@ -65,16 +65,36 @@ iterator *ford_johnson_insertion(iterator *it_array, std::size_t block_size, siz
 		for (size_t j = 0; j < block_size && i + j < size; j++)
 		{
 			if (block % 2 == 0)
-				main[main_i++] = it_array[j + i];
+				main[(main_i * 2 * block_size) + j] = it_array[j + i];
 			else
 				pend[pend_i++] = it_array[j + i];
 		}
+		if (block % 2 == 0)
+			++main_i;
 	}
 
-	for (size_t i = pend_blocks; i == 0; i--)
+	//TODO: insertar por jacobstahl
+	for (size_t i = 0; i < pend_blocks; i--)
 	{
-		//TODO: Insercion y binary search
+		int value = pend[i * block_size];
+		int j = main_i/2;
+		while (j > 0)
+		{
+			if (value > *main[j * block_size])
+				j /= 2;
+			else
+			{
+				for (size_t k = 0; k < block_size; k++)
+				{
+					main[j * block_size + 1] = pend[k]
+				}
+
+			}
+		}
+
 	}
+	delete[] pend;
+	return main;
 }
 
 template <typename iterator>
