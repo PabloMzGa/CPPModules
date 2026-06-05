@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BitcoinExchange.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 14:09:15 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/20 21:14:59 by pablo            ###   ########.fr       */
+/*   Updated: 2026/05/28 21:29:51 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ static bool is_valid_date(const std::string &date)
 	ss >> year >> d1 >> month >> d2 >> day;
 	if (ss.fail())
 		return false;
-	if (year < 0 || month < 1 || month > 12 || day < 1 || day > 31)
+	if (year < 0 || month < 1 || month > 12 || day < 1 || day > 31) //TODO: ¿Y febrero y los bisiestos que mákina? ¿Y los meses que acaban en 30 que?
 		return false;
 	return true;
 }
