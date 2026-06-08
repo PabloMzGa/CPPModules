@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
+/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 18:28:27 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/21 19:52:25 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/06/08 22:48:44 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,6 @@ unsigned int PmergeMe::parse_positive_int(const std::string &token)
 	return static_cast<unsigned int>(value);
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// CONSTRUCTORS /////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -104,14 +102,14 @@ void PmergeMe::sort()
 	std::cout << std::endl;
 
 	start = clock();
-	//merge_sort(_vector);
+	apply_order(_vector, ford_johson::ford_johnson(_vector));
 	end = clock();
-
+	return;
 	_vector_time_ms +=
 	    static_cast<double>(end - start) * 1000.0 / CLOCKS_PER_SEC;
 
 	start = clock();
-	//merge_sort(_deque);
+	apply_order(_deque, ford_johson::ford_johnson(_deque));
 	end = clock();
 
 	_deque_time_ms +=
@@ -134,3 +132,22 @@ void PmergeMe::sort()
 	          << " elements with std::deque : " << _deque_time_ms << " ms"
 	          << std::endl;
 }
+
+namespace ford_johson
+{
+s_JacobsthalSeq buildJacobsthalSeq(std::size_t size)
+{
+    std::size_t jn;
+    s_JacobsthalSeq js;
+    js.size = 0;
+    for (size_t n = 2; n < 64; n++)
+    {
+        jn = ((1LL << (n + 1)) + (n % 2 == 0 ? 1 : -1)) / 3;
+        if (jn > size + 1)
+            break;
+        js.seq[js.size++] = jn - 1; // Make sequence 0 based
+    }
+    return js;
+}
+}
+
