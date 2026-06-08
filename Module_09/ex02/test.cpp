@@ -22,7 +22,6 @@ int main()
         print_iter_array<vit>(it_array, size);
         delete[] it_array;
     }
-    return 0;
     // deque
     {
         std::deque<int> d(seq.begin(), seq.end());
