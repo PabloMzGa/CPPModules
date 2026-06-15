@@ -6,12 +6,12 @@
 #    By: pablo <pablo@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/20 14:34:30 by pabmart2          #+#    #+#              #
-#    Updated: 2026/05/20 20:14:27 by pablo            ###   ########.fr        #
+#    Updated: 2026/06/15 20:27:58 by pablo            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CXX = clang++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXX = g++
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 -g
 
 BUILD_DIR = build
 NAME = $(BUILD_DIR)/PmergeMe

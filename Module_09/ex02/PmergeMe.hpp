@@ -6,7 +6,7 @@
 /*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/20 18:25:21 by pablo             #+#    #+#             */
-/*   Updated: 2026/06/08 23:14:54 by pablo            ###   ########.fr       */
+/*   Updated: 2026/06/16 00:07:09 by pablo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+#include <cassert>
+#include <iostream>
+#include <sstream>
 
 class PmergeMe
 {
@@ -114,6 +118,16 @@ void print_iter_array(Iterator *arr, std::size_t size)
 	std::cout << '\n';
 }
 
+template <typename Iterator> struct s_Block
+{
+	Iterator *block_start; // Iterador real al elemento
+	s_Block *pair;         // Puntero a su pareja (a_i <-> b_i)
+	bool is_big;           // true = bloque grande (b_i), false = pequeño (a_i)
+	std::size_t block_index; // Índice del bloque al que pertenece
+	unsigned int block_value;
+	bool inserted;
+};
+
 /**
  * @struct s_JacobsthalSeq
  * An struct containing an array with several Jacobsthal Numbers
@@ -128,33 +142,584 @@ struct s_JacobsthalSeq
 	std::size_t size;
 };
 
-/**
- * @struct s_FJBlockInfo
- * An struct containing all block info required for the execution of the
- * Ford Johnson insertion part.
- *
- * @param main Pointer to the main chain.
- * @param main_size Number of elemets in the main chain.
- * @param main_blocks Number of blocks in the main chain.
- * @param pend Pointer to the pend chain.
- * @param pend_size Number of elemets in the pend chain.
- * @param pend_blocks Number of blocks in the pend chain.
- * @param block_size Number of elemets inside each block.
- * @param total_size Total number of elemets inside the original array.
- * @param inserted_blocks Number of blocks inserted in main.
- */
-template <typename Iterator> struct s_FJBlockInfo
+template <typename Iterator> struct s_SequenceContainer
 {
-	Iterator *main;
+	s_Block<Iterator> *main;
 	std::size_t main_size;
-	std::size_t main_blocks;
-	Iterator *pend;
+	s_Block<Iterator> *pend;
 	std::size_t pend_size;
-	std::size_t pend_blocks;
-	std::size_t block_size;
-	std::size_t total_size;
-	std::size_t inserted_blocks;
 };
+
+template <typename Iterator> struct FJState
+{
+	Iterator *it_array;     // array de iteradores (entrada)
+	std::size_t size;       // número total de elementos
+	std::size_t block_size; // tamaño del bloque actual
+
+	s_SequenceContainer<Iterator> container; // MAIN + PEND
+
+	Iterator *buffer;            // buffer donde se insertan los bloques
+	std::size_t inserted_blocks; // bloques ya insertados (big + small)
+
+	s_JacobsthalSeq js;     // secuencia Jacobsthal para PEND
+	std::size_t last_start; // último índice Jacobsthal procesado
+};
+
+template <typename Iterator>
+void debug_print_main_and_pend_one_line(const FJState<Iterator> &st)
+{
+	typedef typename std::iterator_traits<Iterator>::value_type value_t;
+
+	std::cerr << "DBG STATE size=" << st.size << " block_size=" << st.block_size
+	          << " main_size=" << st.container.main_size
+	          << " pend_size=" << st.container.pend_size << "\n";
+
+	std::cerr << "DBG SEQ:";
+	// Primero MAIN (bloques en orden)
+	for (std::size_t b = 0; b < st.container.main_size; ++b)
+	{
+		Iterator *block_start = st.container.main[b].block_start;
+		std::ptrdiff_t idx = block_start - st.it_array;
+		if (idx < 0 || static_cast<std::size_t>(idx) + st.block_size > st.size)
+		{
+			std::cerr << " [MAIN[" << b << "] OUT_OF_RANGE]";
+			continue;
+		}
+		std::cerr << " [M" << b << ":";
+		for (std::size_t k = 0; k < st.block_size; ++k)
+		{
+			value_t v = *block_start[k];
+			std::cerr << (k ? " " : "") << v;
+		}
+		std::cerr << "]";
+	}
+
+	// Luego PEND (bloques en orden)
+	for (std::size_t p = 0; p < st.container.pend_size; ++p)
+	{
+		Iterator *block_start = st.container.pend[p].block_start;
+		std::ptrdiff_t idx = block_start - st.it_array;
+		if (idx < 0 || static_cast<std::size_t>(idx) + st.block_size > st.size)
+		{
+			std::cerr << " [PEND[" << p << "] OUT_OF_RANGE]";
+			continue;
+		}
+		std::cerr << " [P" << p << ":";
+		for (std::size_t k = 0; k < st.block_size; ++k)
+		{
+			value_t v = *block_start[k];
+			std::cerr << (k ? " " : "") << v;
+		}
+		std::cerr << "]";
+	}
+
+	std::cerr << "\n";
+}
+
+#include <iostream>
+
+template <typename Iterator>
+void link_pairs(s_SequenceContainer<Iterator> &container)
+{
+	// Nada que hacer si no hay mains
+	if (container.main_size == 0)
+		return;
+
+	// Si no hay al menos 2 mains, no podemos enlazar MAIN[0] con MAIN[1]
+	if (container.main_size >= 2)
+	{
+		// MAIN[0] es small, su pareja es MAIN[1]
+		container.main[0].pair = &container.main[1];
+		container.main[0].is_big = false;
+		container.main[1].is_big = true;
+	}
+	else
+	{
+		std::cerr << "link_pairs_simple: main_size < 2, no se puede enlazar "
+		             "MAIN[0] con MAIN[1]\n";
+	}
+
+	// Emparejar cada pend[p] con MAIN[2 + p]
+	for (std::size_t p = 0; p < container.pend_size; ++p)
+	{
+		std::size_t main_idx = 2 + p;
+		if (main_idx < container.main_size)
+		{
+			container.pend[p].pair = &container.main[main_idx];
+			// mantener block_index coherente (opcional)
+			// container.pend[p].block_index = p;
+		}
+		else
+		{
+			container.pend[p].pair = NULL;
+			std::cerr << "link_pairs_simple: no existe MAIN[" << main_idx
+			          << "] para emparejar PEND[" << p << "]\n";
+		}
+	}
+}
+
+/* template <typename Iterator>
+s_SequenceContainer<Iterator>
+build_sequences(Iterator *it_array, std::size_t size, std::size_t block_size)
+{
+    s_SequenceContainer<Iterator> container;
+
+    // Número de bloques COMPLETOS
+    std::size_t total_blocks = size / block_size;
+
+    // Si no hay bloques completos → no hay secuencias
+    if (total_blocks == 0)
+    {
+        container.main = NULL;
+        container.main_size = 0;
+        container.pend = NULL;
+        container.pend_size = 0;
+        return container;
+    }
+
+    // MAIN = bloque 0 + impares
+    std::size_t main_blocks = 1 + total_blocks / 2;
+
+    // PEND = pares > 0
+    std::size_t pend_blocks = (total_blocks > 1 ? (total_blocks - 1) / 2 : 0);
+
+    container.main = new s_Block<Iterator>[main_blocks];
+    container.main_size = main_blocks;
+
+    container.pend = new s_Block<Iterator>[pend_blocks];
+    container.pend_size = pend_blocks;
+
+    std::size_t main_i = 0;
+    std::size_t pend_i = 0;
+
+    for (std::size_t block = 0; block < total_blocks; ++block)
+    {
+        Iterator *block_start = &it_array[block * block_size];
+
+        s_Block<Iterator> info;
+        info.block_start = block_start;
+        info.pair = NULL;
+        info.is_big = false;
+        info.block_value = 0;
+
+        if (block == 0 || (block % 2 == 1))
+        {
+            info.block_index = main_i;
+            container.main[main_i++] = info;
+        }
+        else
+        {
+            info.block_index = pend_i;
+            container.pend[pend_i++] = info;
+        }
+    }
+
+    // link_pairs(container);
+
+    return container;
+} */
+
+template <typename Iterator>
+s_SequenceContainer<Iterator>
+build_sequences(Iterator *it_array, std::size_t size, std::size_t block_size)
+{
+	s_SequenceContainer<Iterator> container;
+
+	if (block_size == 0)
+	{
+		// defensivo: no permitir block_size 0
+		container.main = NULL;
+		container.main_size = 0;
+		container.pend = NULL;
+		container.pend_size = 0;
+		return container;
+	}
+
+	// Número de bloques COMPLETOS
+	std::size_t total_blocks = size / block_size;
+
+	// Si no hay bloques completos → no hay secuencias
+	if (total_blocks == 0)
+	{
+		container.main = NULL;
+		container.main_size = 0;
+		container.pend = NULL;
+		container.pend_size = 0;
+		return container;
+	}
+
+	// MAIN = bloque 0 + impares
+	std::size_t main_blocks = 1 + total_blocks / 2;
+
+	// PEND = pares > 0
+	std::size_t pend_blocks = (total_blocks > 1 ? (total_blocks - 1) / 2 : 0);
+
+	container.main = new s_Block<Iterator>[main_blocks];
+	container.main_size = main_blocks;
+
+	container.pend = new s_Block<Iterator>[pend_blocks];
+	container.pend_size = pend_blocks;
+
+	std::size_t main_i = 0;
+	std::size_t pend_i = 0;
+
+	for (std::size_t block = 0; block < total_blocks; ++block)
+	{
+		Iterator *block_start = &it_array[block * block_size];
+
+		s_Block<Iterator> info;
+		info.block_start = block_start;
+		info.pair = NULL;
+		info.is_big = false;
+		info.inserted = false;
+
+		// Asignar block_value: último elemento del bloque (defensivo)
+		std::size_t last_offset = block_size - 1;
+		std::size_t last_index = block * block_size + last_offset;
+		if (last_index < size)
+		{
+			info.block_value =
+			    static_cast<unsigned int>(*block_start[last_offset]);
+		}
+		else
+		{
+			// No debería ocurrir si total_blocks calculado correctamente,
+			// pero por seguridad asignamos el primer elemento del bloque.
+			info.block_value = static_cast<unsigned int>(*block_start[0]);
+		}
+
+		if (block == 0 || (block % 2 == 1))
+		{
+			info.block_index = main_i;
+			container.main[main_i++] = info;
+		}
+		else
+		{
+			info.block_index = pend_i;
+			container.pend[pend_i++] = info;
+		}
+	}
+
+	link_pairs(container); // si lo necesitas, descomenta
+
+	return container;
+}
+
+/* template <typename Iterator>
+Iterator *build_insertion_buffer(Iterator *it_array,
+                                 const s_SequenceContainer<Iterator> &container,
+                                 std::size_t size, std::size_t block_size)
+{
+    // 1. Crear buffer del mismo tamaño que it_array
+    Iterator *buffer = new Iterator[size];
+
+    std::size_t pos = 0;
+
+    // 2. Copiar todos los bloques de MAIN al principio del buffer
+    for (std::size_t b = 0; b < container.main_size; ++b)
+    {
+        Iterator *block_start = container.main[b].block_start;
+
+        for (std::size_t k = 0; k < block_size; ++k)
+        {
+            buffer[pos++] = block_start[k];
+        }
+    }
+
+    // 3. Calcular cuántos elementos son sobrantes
+    std::size_t used_by_main = container.main_size * block_size;
+    std::size_t used_by_pend = container.pend_size * block_size;
+
+    std::size_t leftover = 0;
+    if (size > used_by_main + used_by_pend)
+        leftover = size - (used_by_main + used_by_pend);
+
+    // 4. Copiar los SOBRANTES al final del buffer
+    //    Los sobrantes están al final de it_array
+    for (std::size_t i = size - leftover; i < size; ++i)
+    {
+        buffer[pos++] = it_array[i];
+    }
+
+    return buffer;
+} */
+
+template <typename Iterator>
+Iterator *build_insertion_buffer(Iterator *it_array,
+                                 const s_SequenceContainer<Iterator> &container,
+                                 std::size_t size, std::size_t block_size)
+{
+	Iterator *buffer = new Iterator[size];
+	std::size_t pos = 0;
+
+	// 1) Copiar MAIN
+	for (std::size_t b = 0; b < container.main_size; ++b)
+	{
+		Iterator *block_start = container.main[b].block_start;
+		std::ptrdiff_t idx = block_start - it_array;
+		if (idx < 0 || static_cast<std::size_t>(idx) + block_size > size)
+		{
+			std::cerr << "FATAL: main block_start out of bounds b=" << b
+			          << " idx=" << idx << "\n";
+			abort();
+		}
+		for (std::size_t k = 0; k < block_size; ++k)
+		{
+			if (pos >= size)
+			{
+				std::cerr << "FATAL: buffer overflow copying MAIN pos=" << pos
+				          << "\n";
+				abort();
+			}
+			buffer[pos++] = block_start[k];
+		}
+	}
+
+	// 2) Reservar hueco para PEND (no escribir, solo avanzar pos)
+	std::size_t hole = container.pend_size * block_size;
+	if (pos + hole > size)
+	{
+		std::cerr << "FATAL: not enough space to reserve hole pos=" << pos
+		          << " hole=" << hole << " size=" << size << "\n";
+		abort();
+	}
+	// Opcional: si quieres marcar el hueco con un valor reconocible, puedes
+	// hacerlo aquí.
+	pos += hole;
+
+	// 3) Copiar leftover (si existe)
+	std::size_t used_by_main = container.main_size * block_size;
+	std::size_t used_by_pend = container.pend_size * block_size;
+	std::size_t leftover = 0;
+	if (size > used_by_main + used_by_pend)
+		leftover = size - (used_by_main + used_by_pend);
+
+	if (leftover > 0)
+	{
+		std::size_t start = size - leftover;
+		if (start > size)
+		{
+			std::cerr << "FATAL: start > size\n";
+			abort();
+		}
+		for (std::size_t i = start; i < size; ++i)
+		{
+			if (pos >= size)
+			{
+				std::cerr << "FATAL: buffer overflow copying leftover pos="
+				          << pos << "\n";
+				abort();
+			}
+			buffer[pos++] = it_array[i];
+		}
+	}
+
+	// Comprobación final
+	if (pos != size)
+	{
+		std::cerr << "WARN: build_insertion_buffer finished pos=" << pos
+		          << " expected=" << size << "\n";
+	}
+
+	// DEBUG: comprobar que el buffer tiene exactamente 'size' elementos
+	// inicializados
+	std::cerr << "DBG build_insertion_buffer: final pos=" << pos
+	          << " expected size=" << size << "\n";
+
+	return buffer;
+}
+
+template <typename Iterator>
+std::size_t binary_search_block_pos(unsigned int value, Iterator *buffer,
+                                    std::size_t start_block,
+                                    std::size_t end_block,
+                                    std::size_t block_size)
+{
+	if (block_size == 0)
+		return 0;
+
+	// Caso trivial: rango vacío
+	if (start_block > end_block)
+		return start_block;
+
+	// right es exclusivo
+	std::size_t left = start_block;
+	std::size_t right = end_block + 1;
+
+	while (left < right)
+	{
+		std::size_t mid = left + (right - left) / 2;
+
+		// Índice del último elemento del bloque mid
+		std::size_t last_index = (mid + 1) * block_size - 1;
+
+		// Comparación por valor
+		unsigned int mid_value = *buffer[last_index];
+
+		if (value <= mid_value)
+			right = mid;
+		else
+			left = mid + 1;
+	}
+
+	return left;
+}
+
+/* template <typename Iterator>
+void shift_right(Iterator *arr, std::size_t from_index, std::size_t count,
+                 std::size_t shift)
+{
+    if (count == 0 || shift == 0)
+        return;
+    for (std::size_t i = count; i > 0; --i)
+        arr[from_index + i - 1 + shift] = arr[from_index + i - 1];
+} */
+template <typename Iterator>
+void shift_right(Iterator *arr, std::size_t from_index, std::size_t count,
+                 std::size_t shift, std::size_t total_size)
+{
+	if (count == 0 || shift == 0)
+		return;
+
+	// Comprobación de límites: último índice destino = from_index + count - 1 +
+	// shift
+	if (from_index + count - 1 + shift >= total_size)
+	{
+		std::cerr << "FATAL: shift_right out of bounds from_index="
+		          << from_index << " count=" << count << " shift=" << shift
+		          << " last_dest_index=" << (from_index + count - 1 + shift)
+		          << " total_size=" << total_size << "\n";
+		abort();
+	}
+
+	// Copiar de derecha a izquierda para evitar sobrescribir origen
+	for (std::size_t i = count; i > 0; --i)
+		arr[from_index + i - 1 + shift] = arr[from_index + i - 1];
+}
+
+template <typename Iterator>
+void insert_block_into_main(FJState<Iterator> &st, std::size_t pend_block_index)
+{
+
+	// 0. Validaciones iniciales
+	if (pend_block_index >= st.container.pend_size)
+	{
+		std::cerr
+		    << "WARN: insert_block_into_main: pend_block_index out of range: "
+		    << pend_block_index << "\n";
+		return;
+	}
+
+	s_Block<Iterator> &small = st.container.pend[pend_block_index];
+
+	// Si ya fue insertado, saltar
+	if (small.inserted)
+	{
+		std::cerr << "WARN: insert_block_into_main: pend_idx="
+		          << pend_block_index << " ya insertado, saltando\n";
+		return;
+	}
+
+	// total_blocks (número de bloques completos)
+	std::size_t total_blocks = st.size / st.block_size;
+	if (st.inserted_blocks >= total_blocks)
+	{
+		std::cerr << "WARN: insert_block_into_main: no hay bloques libres para "
+		             "insertar pend_idx="
+		          << pend_block_index
+		          << " (inserted_blocks=" << st.inserted_blocks
+		          << " total_blocks=" << total_blocks << ")\n";
+		return;
+	}
+	s_SequenceContainer<Iterator> &container = st.container;
+	Iterator *buffer = st.buffer;
+	std::size_t block_size = st.block_size;
+
+	// 1. Bloque pequeño a insertar
+	Iterator *block_start = small.block_start;
+	unsigned int key = small.block_value;
+
+	// 2. Calcular upper bound usando la pareja (bloque grande)
+	std::size_t upper = st.inserted_blocks; // fallback
+
+	if (small.pair != NULL)
+	{
+		std::size_t big_pos = small.pair->block_index;
+
+		// upper = posición del big + 1
+		upper = big_pos + 1;
+
+		if (upper > st.inserted_blocks)
+			upper = st.inserted_blocks;
+	}
+
+	// 3. Binary search REAL dentro del rango permitido
+	std::size_t target_pos =
+	    (upper == 0) ? 0
+	                 : binary_search_block_pos(key, buffer, 0,
+	                                           upper - 1, // ¡IMPORTANTE!
+	                                           block_size);
+
+	/*
+	// 4. shift_right para abrir hueco
+	std::size_t from_index = target_pos * block_size;
+	std::size_t count = st.inserted_blocks * block_size - from_index;
+
+	// shift_right(buffer, from_index, count, block_size);
+	shift_right(buffer, from_index, count, block_size, st.size);
+	*/
+
+	// 4. shift_right para abrir hueco
+	std::size_t from_index = target_pos * block_size;
+	std::size_t count = 0;
+	if (st.inserted_blocks * block_size > from_index)
+		count = st.inserted_blocks * block_size - from_index;
+	else
+		count = 0;
+
+	// TRACE antes de shift
+	std::cerr << "DBG insert_block_into_main: pend_idx=" << pend_block_index
+	          << " target_pos=" << target_pos << " from_index=" << from_index
+	          << " count=" << count << " shift(block_size)=" << block_size
+	          << " inserted_blocks=" << st.inserted_blocks
+	          << " st.size=" << st.size << "\n";
+
+	// Llamada segura (Opción A)
+	shift_right(buffer, from_index, count, block_size, st.size);
+
+	// 5. Copiar el bloque dentro del hueco
+	std::size_t base = target_pos * block_size;
+	for (std::size_t k = 0; k < block_size; ++k)
+		buffer[base + k] = block_start[k];
+
+	// TRACE: mostrar primer y último elemento del hueco insertado
+	if (block_size > 0)
+	{
+		std::cerr << "DBG insert_block_into_main: inserted block at base="
+		          << base << " first=" << *buffer[base]
+		          << " last=" << *buffer[base + block_size - 1] << "\n";
+	}
+
+	// 6. Actualizar block_index de los bloques del MAIN
+	//    Todos los bloques grandes con block_index >= target_pos
+	//    deben desplazarse una posición hacia abajo.
+	std::size_t i;
+	for (i = 0; i < container.main_size; ++i)
+	{
+		if (container.main[i].block_index >= target_pos)
+			container.main[i].block_index++;
+	}
+
+	// 7. El bloque pequeño insertado ahora forma parte del MAIN
+	small.block_index = target_pos;
+
+	// 8. Incrementar contador global de bloques insertados
+	st.inserted_blocks++;
+
+	small.inserted = true;
+
+	std::cout << "Inserted!" << std::endl;
+}
 
 /**
  * @brief Builds and returns a s_JacobsthalSeq.
@@ -168,6 +733,178 @@ template <typename Iterator> struct s_FJBlockInfo
  * @return A s_JacobsthalSeq object containing the required sequence.
  */
 s_JacobsthalSeq buildJacobsthalSeq(std::size_t size);
+
+template <typename Iterator>
+void process_jacobsthal_blocks(FJState<Iterator> &fj_state)
+{
+	s_SequenceContainer<Iterator> &container = fj_state.container;
+	const s_JacobsthalSeq &js = fj_state.js;
+
+	// Si no hay bloques pequeños, no hay nada que procesar
+	if (container.pend_size == 0)
+		return;
+
+	for (std::size_t i = 0; i < js.size; ++i)
+	{
+		// js.seq[] ya es 0-based → NO restar 1
+		std::size_t start = js.seq[i];
+		std::size_t end = (i > 0 ? js.seq[i - 1] : 0);
+
+		// Clamp por seguridad
+		if (start >= container.pend_size)
+		{
+			fj_state.last_start = container.pend_size - 1;
+			return; // ← detener Jacobsthal
+		}
+		if (end >= container.pend_size)
+			end = container.pend_size - 1;
+
+		// Insertar en orden descendente
+		std::size_t j = start + 1;
+		while (j-- > end)
+		{
+			insert_block_into_main(fj_state, j);
+		}
+
+		// Después de procesar el bloque Jacobsthal (ya se han llamado
+		// insert_block_into_main)
+		std::size_t inserted_pend = 0;
+		if (fj_state.inserted_blocks > container.main_size)
+			inserted_pend = fj_state.inserted_blocks - container.main_size;
+		fj_state.last_start = inserted_pend;
+	}
+}
+/*
+template <typename Iterator>
+void process_remaining_blocks(FJState<Iterator> &fj_state)
+{
+    s_SequenceContainer<Iterator> &container = fj_state.container;
+
+    // Si no hay bloques pequeños, no hay nada que hacer
+    if (container.pend_size == 0)
+        return;
+
+    // Bloques pequeños ya insertados
+    std::size_t inserted_pend = 0;
+    if (fj_state.inserted_blocks > container.main_size)
+        inserted_pend = fj_state.inserted_blocks - container.main_size;
+
+    // Si ya están todos insertados → salir
+    if (inserted_pend >= container.pend_size)
+        return;
+
+    // Bloques pequeños que faltan por insertar
+    std::size_t remaining = container.pend_size - inserted_pend;
+
+    // Insertar en orden descendente
+    std::size_t j = fj_state.last_start + remaining;
+    while (j-- > fj_state.last_start)
+    {
+        insert_block_into_main(fj_state, j);
+    }
+} */
+template <typename Iterator>
+void process_remaining_blocks(FJState<Iterator> &fj_state)
+{
+	s_SequenceContainer<Iterator> &container = fj_state.container;
+
+	if (container.pend_size == 0)
+		return;
+
+	// Cuántos PEND ya insertados
+	std::size_t inserted_pend = 0;
+	if (fj_state.inserted_blocks > container.main_size)
+		inserted_pend = fj_state.inserted_blocks - container.main_size;
+
+	if (inserted_pend >= container.pend_size)
+		return;
+
+	// Insertar todos los PEND restantes, en orden ascendente
+	for (std::size_t idx = inserted_pend; idx < container.pend_size; ++idx)
+	{
+		insert_block_into_main(fj_state, idx);
+	}
+
+	// Actualizar last_start al primer índice no procesado (aquí, ninguno)
+	fj_state.last_start = container.pend_size;
+}
+
+template <typename Iterator>
+FJState<Iterator> init_fj_state(Iterator *it_array, std::size_t size,
+                                std::size_t block_size)
+{
+	FJState<Iterator> st;
+
+	st.it_array = it_array;
+	st.size = size;
+	st.block_size = block_size;
+	// 1. Construir secuencias MAIN y PEND
+	st.container = build_sequences(it_array, size, block_size);
+
+	// Si no hay bloques completos → no hay nada que hacer
+	if (st.container.main_size == 0)
+	{
+		st.buffer = NULL;
+		st.inserted_blocks = 0;
+		st.last_start = 0;
+		st.js.size = 0;
+		return st;
+	}
+
+	// 2. Construir buffer inicial (MAIN + sobrantes)
+	st.buffer =
+	    build_insertion_buffer(it_array, st.container, size, block_size);
+
+	// 3. Inicializar contadores
+	st.inserted_blocks = st.container.main_size; // los big ya están en buffer
+	st.last_start = 0;
+
+	// 4. Construir secuencia Jacobsthal para los bloques pequeños
+	st.js = buildJacobsthalSeq(st.container.pend_size);
+
+	debug_print_main_and_pend_one_line(st);
+
+	return st;
+}
+
+template <typename Iterator>
+Iterator *ford_johson_insertion(Iterator *it_array, std::size_t block_size,
+                                std::size_t size)
+{
+	// std::cout << "it_array =  " << block_size;
+	print_iter_array(it_array, size);
+	// Caso base
+	if (block_size == 0 || block_size >= size)
+		return it_array;
+	FJState<Iterator> fj_state = init_fj_state(it_array, size, block_size);
+
+	// Si no hay bloques grandes, no se puede continuar
+	if (fj_state.container.main_size == 0)
+		return it_array;
+
+	process_jacobsthal_blocks(fj_state);
+
+	// ---------------------------------------------------------
+	// 5. Insertar los bloques pequeños restantes
+	// ---------------------------------------------------------
+	process_remaining_blocks(fj_state);
+
+	// ---------------------------------------------------------
+	// 7. Recursión con block_size / 2
+	// ---------------------------------------------------------
+
+	Iterator *result =
+	    ford_johson_insertion(fj_state.buffer, block_size / 2, size);
+
+	// ---------------------------------------------------------
+	// 8. Liberar memoria de estructuras auxiliares
+	// ---------------------------------------------------------
+	delete[] fj_state.container.main;
+	delete[] fj_state.container.pend;
+	delete[] it_array;
+
+	return result;
+}
 
 /**
  * @brief Builds the iterator array from the original container
@@ -203,357 +940,6 @@ void swap_blocks(Iterator *it_array, std::size_t block_size, std::size_t pos)
 {
 	for (std::size_t i = pos; i < pos + block_size; ++i)
 		std::swap(it_array[i], it_array[i + block_size]);
-}
-
-/**
- * @brief Shifts a contiguous block of elements to the right inside an array.
- *
- * @warning The caller must ensure that the target positions
- *          (from_index + shift) ... (from_index + count - 1 + shift)
- *          are within the bounds of the array.
- *
- * @param arr Pointer to the array whose elements will be shifted.
- * @param from_index Index of the first element to shift.
- * @param count Number of elements to shift (size of the block).
- * @param shift Number of positions to move the block to the right.
- */
-template <typename Iterator>
-void shift_right(Iterator *arr, std::size_t from_index, std::size_t count,
-                 std::size_t shift)
-{
-	if (count == 0 || shift == 0)
-		return;
-	for (std::size_t i = count; i > 0; --i)
-		arr[from_index + i - 1 + shift] = arr[from_index + i - 1];
-}
-
-/**
- * @brief Binary search over blocks to find the insertion position.
- *
- * Searches the blocks in the interval [start_block, end_block] (inclusive),
- * comparing 'value' with the last element of each block. Returns the index of
- * the first block whose last element is >= value, or the position where the
- * block should be inserted if none matches.
- *
- * @param value       Value to compare.
- * @param info        Block metadata (sizes, main array, block size).
- * @param start_block First block to include in the search.
- * @param end_block   Last block to include in the search.
- *
- * @return Block index where 'value' should be inserted, clamped to
- *         [0, info.main_blocks].
- */
-template <typename Iterator>
-std::size_t
-binary_search_block_pos(unsigned int value, const s_FJBlockInfo<Iterator> &info,
-                        std::size_t start_block, std::size_t end_block)
-{
-	if (info.block_size == 0 || info.main_blocks == 0)
-		return 0;
-
-	// Max valid range clamp [0, info.main_blocks-1]
-	if (start_block >= info.main_blocks)
-		return info.main_blocks;
-	if (end_block >= info.main_blocks)
-		end_block = info.main_blocks - 1;
-	if (start_block > end_block)
-		return start_block;
-
-	// right is exclusive: [left, right)
-	std::size_t left = start_block;
-	std::size_t right = end_block + 1;
-
-	while (left < right)
-	{
-		// Safe mid calculation
-		std::size_t mid = left + (right - left) / 2;
-
-		// Last index from the mid block
-		std::size_t last_index = (mid + 1) * info.block_size;
-		if (last_index == 0)
-			last_index = 0;
-		else
-			last_index = last_index - 1;
-
-		// Out of bounds check
-		if (last_index >= info.main_size)
-			last_index = info.main_size == 0 ? 0 : info.main_size - 1;
-
-		if (value <= *info.main[last_index])
-			right = mid;
-		else
-			left = mid + 1;
-	}
-
-	return left;
-}
-
-/**
- * @brief Builds the block distribution used by the Ford–Johnson algorithm.
- *
- * Splits the input array into consecutive blocks of size 'block_size' and
- * distributes them into two arrays: 'main' and 'pend'. A block goes to 'main'
- * if it is the first block or if it is a full block located at an odd index.
- * Incomplete blocks (except block 0) always go to 'pend'.
- *
- * Elements are copied preserving their order inside each block. The function
- * also computes the number of blocks and elements assigned to each array.
- *
- * @param it_array   Pointer to the input array of iterators.
- * @param block_size Size of each block used for the distribution.
- * @param size       Total number of elements in the input array.
- *
- * @return A fully populated s_FJBlockInfo structure containing:
- *         - main / pend arrays
- *         - sizes and block counts
- *         - block_size and total_size
- *         If block_size is 0 or >= size, returns an empty structure.
- */
-template <typename Iterator>
-s_FJBlockInfo<Iterator> build_fj_block_info(Iterator *it_array,
-                                            std::size_t block_size, size_t size)
-{
-
-	s_FJBlockInfo<Iterator> info;
-	info.main = 0;
-	info.pend = 0;
-	info.main_size = 0;
-	info.main_blocks = 0;
-	info.pend_blocks = 0;
-	info.pend_size = 0;
-	info.block_size = block_size;
-	info.total_size = size;
-	info.inserted_blocks = 0;
-
-	if (block_size == 0 || block_size >= size)
-		return info;
-
-	info.main = new Iterator[size]();
-	info.pend = new Iterator[size]();
-
-	std::size_t main_i = 0;
-	std::size_t pend_i = 0;
-
-	for (size_t i = 0; i < size; i += block_size)
-	{
-		std::size_t block = i / block_size;
-		std::size_t current_block_size = std::min(block_size, size - i);
-
-		bool goes_to_main = (block == 0 || block % 2 == 1);
-		bool full_block = (current_block_size == block_size);
-
-		// Incomplete blocks must go to pend
-		if (!full_block && block != 0)
-			goes_to_main = false;
-
-		for (size_t j = 0; j < current_block_size; j++)
-		{
-			if (goes_to_main)
-			{
-				info.main[(main_i * block_size) + j] = it_array[i + j];
-				++info.main_size;
-			}
-			else
-			{
-				info.pend[pend_i++] = it_array[i + j];
-				++info.pend_size;
-			}
-		}
-
-		if (goes_to_main)
-			++main_i;
-		else if (full_block)
-			++info.pend_blocks;
-	}
-
-	info.main_blocks = main_i;
-
-	return info;
-}
-
-/**
- * @brief Inserts a full block from 'pend' into its sorted position in 'main'.
- *
- * Performs a block-level insertion using the Ford–Johnson optimization:
- * the binary search is restricted to the range of blocks where the current
- * block can legally fall. For a pend block at index j, the valid search
- * interval ends at j+1, because block j originates from the pair (j, j+1)
- * and therefore cannot be inserted beyond the position of block j+1.
- *
- * It ensures that the search never exceeds the number of blocks already
- * inserted into 'main' and never explores positions that are impossible
- * according to the Ford–Johnson ordering constraints.
- *
- * After determining the insertion position, the function shifts the
- * necessary blocks to the right and copies the selected block from 'pend'
- * into the resulting gap, updating all size and block counters.
- *
- * @param info              Ford–Johnson block metadata (main/pend arrays and
- * sizes).
- * @param pend_block_index  Index of the block inside 'pend' to be inserted.
- * @param block_size        Size of each block (number of elements per block).
- */
-template <typename Iterator>
-void insert_block_into_main(s_FJBlockInfo<Iterator> &info,
-                            std::size_t pend_block_index,
-                            std::size_t block_size)
-{
-	int key = *info.pend[pend_block_index * block_size + (block_size - 1)];
-	std::size_t upper = pend_block_index + info.inserted_blocks;
-	std::size_t target_main_pos = binary_search_block_pos(key, info, 0, upper);
-
-	std::size_t from_index = target_main_pos * block_size;
-	std::size_t count = info.main_size - from_index;
-
-	shift_right(info.main, from_index, count, block_size);
-
-	for (std::size_t k = 0; k < block_size; k++)
-		info.main[target_main_pos * block_size + k] =
-		    info.pend[pend_block_index * block_size + k];
-
-	info.main_size += block_size;
-	++info.main_blocks;
-	++info.inserted_blocks;
-}
-
-/**
- * @brief Inserts blocks from 'pend' into 'main' following the Jacobsthal order.
- *
- * Iterates over the Jacobsthal sequence and inserts the corresponding blocks
- * from 'pend' into 'main' using block-level insertion. The Jacobsthal sequence
- * determines the order in which blocks are inserted to minimize comparisons.
- *
- * @param info        Ford–Johnson block metadata.
- * @param js          Precomputed Jacobsthal sequence for block insertion.
- * @param block_size  Size of each block.
- * @param last_start  Output: last starting index processed, used for remaining
- *                    blocks outside the Jacobsthal sequence.
- */
-template <typename Iterator>
-void process_jacobsthal_blocks(s_FJBlockInfo<Iterator> &info,
-                               const s_JacobsthalSeq &js,
-                               std::size_t block_size, std::size_t &last_start)
-{
-	for (std::size_t i = 0; i < js.size; i++)
-	{
-		std::size_t start = js.seq[i] - 1;
-		std::size_t end = (i > 0 ? js.seq[i - 1] : 0);
-
-		for (std::size_t j = start + 1; j-- > end;)
-		{
-			insert_block_into_main(info, j, block_size);
-			std::cout << "Insertado bloque jacobsthl " << j << std::endl;
-			std::cout << "Main = ";
-			print_iter_array(info.main, info.main_size);
-			std::cout << "Pend = ";
-			print_iter_array(info.pend, info.pend_size);
-		}
-
-		last_start = start;
-	}
-}
-
-/**
- * @brief Inserts the remaining blocks not covered by the Jacobsthal sequence.
- *
- * After processing the Jacobsthal-ordered blocks, some blocks may remain
- * uninserted. This function inserts those blocks in descending order, using the
- * same block-level insertion logic as the Jacobsthal phase.
- *
- * @param info        Ford–Johnson block metadata.
- * @param block_size  Size of each block.
- * @param last_start  Last starting index processed during the Jacobsthal phase.
- */
-template <typename Iterator>
-void process_remaining_blocks(s_FJBlockInfo<Iterator> &info,
-                              std::size_t block_size, std::size_t last_start)
-{
-	if (info.inserted_blocks >= info.pend_blocks)
-		return;
-
-	std::size_t remaining = info.pend_blocks - info.inserted_blocks;
-
-	for (std::size_t j = last_start + remaining; j-- > last_start;)
-		insert_block_into_main(info, j, block_size);
-}
-
-/**
- * @brief Appends leftover elements from 'pend' to the end of 'main'.
- *
- * If the total number of elements in 'pend' is not a multiple of block_size,
- * the final incomplete block is appended directly to the end of 'main' without
- * any binary search or shifting, preserving element order.
- *
- * @param info Ford–Johnson block metadata.
- */
-template <typename Iterator> void insert_leftover(s_FJBlockInfo<Iterator> &info)
-{
-	std::size_t leftover = info.pend_size - info.pend_blocks * info.block_size;
-
-	if (leftover == 0)
-		return;
-
-	for (std::size_t j = 0; j < leftover; j++)
-		info.main[info.main_size + j] =
-		    info.pend[info.pend_blocks * info.block_size + j];
-
-	info.main_size += leftover;
-}
-
-/**
- * @brief Performs the Ford–Johnson insertion phase over block-structured data.
- *
- * Recursively applies the Ford–Johnson block insertion strategy:
- *  - Builds block metadata (main/pend distribution).
- *  - Inserts blocks from 'pend' into 'main' using Jacobsthal ordering.
- *  - Inserts remaining blocks not covered by the Jacobsthal sequence.
- *  - Appends leftover elements.
- *  - Recursively repeats the process with half block size.
- *
- * Returns a newly allocated array containing the merged result. The input
- * array is freed inside the function.
- *
- * @param it_array   Input array of iterators.
- * @param block_size Initial block size for the current recursion level.
- * @param size       Total number of elements.
- *
- * @return Pointer to a newly allocated array containing the merged result.
- */
-template <typename Iterator>
-Iterator *ford_johson_insertion(Iterator *it_array, std::size_t block_size,
-                                std::size_t size)
-{
-	if (block_size == 0 || block_size >= size)
-		return it_array;
-
-	s_FJBlockInfo<Iterator> info =
-	    build_fj_block_info(it_array, block_size, size);
-
-	std::cout << "Block size = " << block_size << std::endl;
-	std::cout << "Main = ";
-	print_iter_array(info.main, info.main_size);
-	std::cout << "Pend = ";
-	print_iter_array(info.pend, info.pend_size);
-
-	if (info.main == 0)
-		return it_array;
-
-	s_JacobsthalSeq js = buildJacobsthalSeq(info.pend_blocks);
-
-	std::size_t last_start = 0;
-
-	process_jacobsthal_blocks(info, js, block_size, last_start);
-	process_remaining_blocks(info, block_size, last_start);
-	insert_leftover(info);
-	std::cout << "Main post insertion  ";
-	print_iter_array(info.main, info.main_size);
-
-	delete[] info.pend;
-
-	Iterator *result = ford_johson_insertion(info.main, block_size / 2, size);
-
-	delete[] it_array;
-	return result;
 }
 
 /**
