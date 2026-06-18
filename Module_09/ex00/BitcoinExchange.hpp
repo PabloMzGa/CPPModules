@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BitcoinExchange.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 13:58:14 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/20 18:47:29 by pablo            ###   ########.fr       */
+/*   Updated: 2026/06/18 21:05:32 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ class BitcoinExchange
 	BitcoinExchange &operator=(const BitcoinExchange &src);
 	~BitcoinExchange();
 
-	void processInput(const std::string &input_path);
+	void process_input(const std::string &input_path);
 
   private:
 	enum ErrorCode
@@ -58,7 +58,7 @@ class BitcoinExchange
 	static bool parse_input_line(const std::string &line, std::string &out_key,
 	                             float &out_value, unsigned int n_line);
 	std::map<std::string, float>::const_iterator
-	getClosestRate(const std::string &key) const;
+	get_closest_date(const std::string &key) const;
 	void parse_csv(std::ifstream &file);
 	std::map<std::string, float> _data;
 };

@@ -6,7 +6,7 @@
 /*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 14:09:15 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/28 21:29:51 by pabmart2         ###   ########.fr       */
+/*   Updated: 2026/06/18 21:05:40 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ BitcoinExchange::BitcoinExchange() {}
  * @param src Source object.
  */
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &src)
-: _data(src._data)
+	: _data(src._data)
 {
 }
 
@@ -68,12 +68,46 @@ static std::string trim(const std::string &s)
 {
 	std::size_t start = 0;
 	while (start < s.size() &&
-	       std::isspace(static_cast<unsigned char>(s[start])))
+		   std::isspace(static_cast<unsigned char>(s[start])))
 		++start;
 	std::size_t end = s.size();
 	while (end > start && std::isspace(static_cast<unsigned char>(s[end - 1])))
 		--end;
 	return s.substr(start, end - start);
+}
+
+/**
+ * @brief Checks whether a given day is valid for the specified month and year.
+ *
+ * Validates basic ranges (year >= 0, month 1–12, day 1–31) and applies
+ * calendar rules:
+ * - February: 28 days, or 29 in leap years.
+ * - April, June, September, November: max 30 days.
+ * - Other months: max 31 days (already ensured by the initial range check).
+ *
+ * @param day   Day of the month.
+ * @param month Month number (1–12).
+ * @param year  Year (>= 0).
+ * @return true if the day is valid for the given month and year, false otherwise.
+ */
+static bool is_valid_day(int day, int month, int year)
+{
+	if (year < 0 || month < 1 || month > 12 || day < 1 || day > 31)
+		return false;
+
+	// February
+	if (month == 2)
+	{
+		bool leap = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+		return leap ? (day <= 29) : (day <= 28);
+	}
+
+	// Months with 30 days
+	if (month == 4 || month == 6 || month == 9 || month == 11)
+		return day <= 30;
+
+	// All other months have 31 days
+	return true;
 }
 
 /**
@@ -100,9 +134,7 @@ static bool is_valid_date(const std::string &date)
 	ss >> year >> d1 >> month >> d2 >> day;
 	if (ss.fail())
 		return false;
-	if (year < 0 || month < 1 || month > 12 || day < 1 || day > 31) //TODO: ¿Y febrero y los bisiestos que mákina? ¿Y los meses que acaban en 30 que?
-		return false;
-	return true;
+	return is_valid_day(day, month, year);
 }
 
 /**
@@ -115,7 +147,7 @@ static bool is_valid_date(const std::string &date)
  * @param detail Extra context appended to the message when relevant.
  */
 void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code,
-                                  const std::string &detail)
+								  const std::string &detail)
 {
 	std::string msg;
 	switch (code)
@@ -155,9 +187,9 @@ void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code,
 		break;
 	}
 	if (!detail.empty() && (code != BitcoinExchange::FileOpen &&
-	                        code != BitcoinExchange::InputOpen &&
-	                        code != BitcoinExchange::DataNotLoaded &&
-	                        code != BitcoinExchange::TooLarge))
+							code != BitcoinExchange::InputOpen &&
+							code != BitcoinExchange::DataNotLoaded &&
+							code != BitcoinExchange::TooLarge))
 		msg += std::string(": ") + detail;
 	throw std::runtime_error(msg);
 }
@@ -179,11 +211,11 @@ void BitcoinExchange::throw_error(BitcoinExchange::ErrorCode code,
  * @return `true` if parsing succeeded.
  */
 bool BitcoinExchange::parse_delimited_line(const std::string &line,
-                                           std::string &out_key,
-                                           float &out_value,
-                                           unsigned int n_line, char separator,
-                                           const std::string &header,
-                                           std::map<std::string, float> *dest)
+										   std::string &out_key,
+										   float &out_value,
+										   unsigned int n_line, char separator,
+										   const std::string &header,
+										   std::map<std::string, float> *dest)
 {
 	std::string trimmed = trim(line);
 
@@ -265,17 +297,20 @@ void BitcoinExchange::parse_csv(std::ifstream &file)
 		try
 		{
 			parse_delimited_line(line, key, value, line_counter, ',',
-			                     CSV_HEADER, &_data);
+								 CSV_HEADER, &_data);
 		}
 		catch (const std::exception &e)
 		{
 			if (line_counter == 0)
 				throw;
+
 			std::string msg = e.what();
 			std::cerr << "Error: " << msg << " => " << trim(line) << std::endl;
 		}
 		++line_counter;
 	}
+	if (line_counter == 0)
+		throw_error(InvalidHeader, "empty file");
 }
 /**
  * @brief Finds the exact or nearest lower date in the database.
@@ -283,8 +318,10 @@ void BitcoinExchange::parse_csv(std::ifstream &file)
  * @return Iterator to the best matching entry, or `end()` if none exists.
  */
 std::map<std::string, float>::const_iterator
-BitcoinExchange::getClosestRate(const std::string &key) const
+BitcoinExchange::get_closest_date(const std::string &key) const
 {
+	if (_data.empty())
+		return _data.end();
 	std::map<std::string, float>::const_iterator it = _data.lower_bound(key);
 	if (it != _data.end() && it->first == key)
 		return it;
@@ -294,7 +331,6 @@ BitcoinExchange::getClosestRate(const std::string &key) const
 		return --it;
 	return --it;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////// WRAPPERS ///////////////////////////////////
@@ -312,11 +348,11 @@ BitcoinExchange::getClosestRate(const std::string &key) const
  * @return `true` if parsing succeeded.
  */
 bool BitcoinExchange::parse_input_line(const std::string &line,
-                                       std::string &out_key, float &out_value,
-                                       unsigned int n_line)
+									   std::string &out_key, float &out_value,
+									   unsigned int n_line)
 {
 	return parse_delimited_line(line, out_key, out_value, n_line, '|',
-	                            INPUT_HEADER);
+								INPUT_HEADER);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -343,6 +379,7 @@ BitcoinExchange::BitcoinExchange(std::string data_path)
 	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << '\n';
+		throw;
 	}
 }
 
@@ -359,7 +396,7 @@ BitcoinExchange::BitcoinExchange(std::string data_path)
  * single bad entry does not prevent the rest of the file from being processed.
  * @param input_path Path to the input file.
  */
-void BitcoinExchange::processInput(const std::string &input_path)
+void BitcoinExchange::process_input(const std::string &input_path)
 {
 	std::ifstream file;
 	std::string line;
@@ -403,22 +440,22 @@ void BitcoinExchange::processInput(const std::string &input_path)
 		if (value > 1000.0f)
 		{
 			std::cerr << "Error: too large a number => " << trim(line)
-			          << std::endl;
+					  << std::endl;
 			++line_counter;
 			continue;
 		}
 		if (line_counter > 0)
 		{
 			std::map<std::string, float>::const_iterator rate =
-			    getClosestRate(key);
+				get_closest_date(key);
 			if (rate == _data.end())
 			{
-				std::cerr << "Error: no rate available for date => " << key
-				          << std::endl;
+				std::cerr << "Error: no earlier rate available than date => " << key
+						  << std::endl;
 				continue;
 			}
 			std::cout << key << " => " << value << " = " << value * rate->second
-			          << std::endl;
+					  << std::endl;
 		}
 		++line_counter;
 	}

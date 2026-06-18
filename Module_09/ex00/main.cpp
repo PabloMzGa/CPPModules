@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pablo <pablo@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pabmart2 <pabmart2@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/15 18:10:00 by pablo             #+#    #+#             */
-/*   Updated: 2026/05/19 18:16:51 by pablo            ###   ########.fr       */
+/*   Updated: 2026/06/18 21:05:32 by pabmart2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,15 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	BitcoinExchange exchange("data.csv");
-	exchange.processInput(argv[1]);
+	try
+	{
+		BitcoinExchange exchange("data.csv");
+		exchange.process_input(argv[1]);
+	}
+	catch (const std::exception &e)
+	{
+		return 1;
+	}
 
 	return 0;
 }
